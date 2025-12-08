@@ -429,7 +429,7 @@ tr.selected {
 .graph-panel.fullscreen {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: 500;
   min-height: auto;
 }
 
@@ -451,7 +451,7 @@ tr.selected {
   position: absolute;
   top: 12px;
   right: 12px;
-  z-index: 101;
+  z-index: 501;
   display: flex;
   align-items: center;
   justify-content: center;
