@@ -87,39 +87,46 @@ const TypeChips = memo(({ types, selected, onToggle }) => (
 // ─────────────────────────────────────────────────────────────────────────────
 // DATA TABLE
 // ─────────────────────────────────────────────────────────────────────────────
-const DataTable = memo(({ data, columns, selectedIdx, onSelect, onDownload, title }) => (
+const DataTable = memo(({ data, columns, selectedIdx, onSelect, onDownload, title, onToggleCollapse, isCollapsed }) => (
   <div className="table-panel">
     <div className="table-header">
       <h3>{title}</h3>
-      <button className="btn-icon" onClick={onDownload} title="Download CSV">
-        ⬇️
-      </button>
+      <div className="table-header-actions">
+        <button className="btn-icon" onClick={onDownload} title="Download CSV">
+          ⬇️
+        </button>
+        <button className="btn-icon" onClick={onToggleCollapse} title={isCollapsed ? "Expand table" : "Collapse table"}>
+          {isCollapsed ? '▶' : '◀'}
+        </button>
+      </div>
     </div>
-    <div className="table-scroll">
-      <table>
-        <thead>
-          <tr>{columns.map(col => <th key={col}>{col.replace('_', ' ')}</th>)}</tr>
-        </thead>
-        <tbody>
-          {data.map((row, i) => (
-            <tr
-              key={i}
-              className={selectedIdx === i ? 'selected' : ''}
-              onClick={() => onSelect(i)}
-            >
-              {columns.map(col => <td key={col}>{row[col]}</td>)}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    {!isCollapsed && (
+      <div className="table-scroll">
+        <table>
+          <thead>
+            <tr>{columns.map(col => <th key={col}>{col.replace('_', ' ')}</th>)}</tr>
+          </thead>
+          <tbody>
+            {data.map((row, i) => (
+              <tr
+                key={i}
+                className={selectedIdx === i ? 'selected' : ''}
+                onClick={() => onSelect(i)}
+              >
+                {columns.map(col => <td key={col}>{row[col]}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
   </div>
 ));
 
 // ─────────────────────────────────────────────────────────────────────────────
 // NETWORK GRAPH
 // ─────────────────────────────────────────────────────────────────────────────
-const NetworkGraph = memo(({ elements, stylesheet, onNodeClick }) => {
+const NetworkGraph = memo(({ elements, stylesheet, onNodeClick, onToggleMaximize, isMaximized }) => {
   const cyRef = useRef(null);
   const onNodeClickRef = useRef(onNodeClick);
   const prevElementsLength = useRef(elements.length);
@@ -167,13 +174,22 @@ const NetworkGraph = memo(({ elements, stylesheet, onNodeClick }) => {
   }
 
   return (
-    <CytoscapeComponent
-      elements={elements}
-      stylesheet={stylesheet}
-      layout={LAYOUT_CONFIG}
-      className="graph-canvas"
-      cy={handleCyInit}
-    />
+    <>
+      <button
+        className="btn-maximize"
+        onClick={onToggleMaximize}
+        title={isMaximized ? "Restore graph" : "Maximize graph"}
+      >
+        {isMaximized ? '◧' : '⛶'}
+      </button>
+      <CytoscapeComponent
+        elements={elements}
+        stylesheet={stylesheet}
+        layout={LAYOUT_CONFIG}
+        className="graph-canvas"
+        cy={handleCyInit}
+      />
+    </>
   );
 });
 
@@ -265,6 +281,7 @@ export default function App() {
   const [status, setStatus] = useState('');
   const [aiModal, setAiModal] = useState({ open: false, content: '' });
   const [showWelcome, setShowWelcome] = useState(true);
+  const [isTableCollapsed, setIsTableCollapsed] = useState(false);
 
   // Computed
   const isPathMode = mode === 'path';
@@ -379,6 +396,10 @@ export default function App() {
     setTargetSearch(val);
   }, []);
 
+  const toggleTableCollapse = useCallback(() => {
+    setIsTableCollapsed(prev => !prev);
+  }, []);
+
   // Render
   return (
     <div className="app">
@@ -447,7 +468,7 @@ export default function App() {
       )}
 
       {/* Main */}
-      <main className="main">
+      <main className={`main ${isTableCollapsed ? 'table-collapsed' : ''}`}>
         <DataTable
           data={tableData}
           columns={columns}
@@ -455,12 +476,16 @@ export default function App() {
           onSelect={setSelectedRow}
           onDownload={() => exportToCsv(tableData, 'network_data.csv')}
           title={isPathMode && targetNode ? 'Paths' : 'Edges'}
+          onToggleCollapse={toggleTableCollapse}
+          isCollapsed={isTableCollapsed}
         />
         <div className="graph-panel">
           <NetworkGraph
             elements={elements}
             stylesheet={stylesheet}
             onNodeClick={handleNodeClick}
+            onToggleMaximize={toggleTableCollapse}
+            isMaximized={isTableCollapsed}
           />
         </div>
       </main>
