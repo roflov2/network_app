@@ -416,6 +416,7 @@ export default function App() {
 
         <div className="toolbar-actions">
           <button className="btn-secondary" onClick={handleClear}>Clear</button>
+{/* Analyze button hidden for now
           <button
             className="btn-primary"
             onClick={handleAiAnalysis}
@@ -423,6 +424,7 @@ export default function App() {
           >
             🤖 Analyze
           </button>
+*/}
         </div>
       </div>
 
