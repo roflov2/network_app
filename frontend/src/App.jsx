@@ -126,7 +126,7 @@ const DataTable = memo(({ data, columns, selectedIdx, onSelect, onDownload, titl
 // ─────────────────────────────────────────────────────────────────────────────
 // NETWORK GRAPH
 // ─────────────────────────────────────────────────────────────────────────────
-const NetworkGraph = memo(({ elements, stylesheet, onNodeClick, onToggleMaximize, isMaximized }) => {
+const NetworkGraph = memo(({ elements, stylesheet, onNodeClick }) => {
   const cyRef = useRef(null);
   const onNodeClickRef = useRef(onNodeClick);
   const prevElementsLength = useRef(elements.length);
@@ -174,22 +174,13 @@ const NetworkGraph = memo(({ elements, stylesheet, onNodeClick, onToggleMaximize
   }
 
   return (
-    <>
-      <button
-        className="btn-maximize"
-        onClick={onToggleMaximize}
-        title={isMaximized ? "Restore graph" : "Maximize graph"}
-      >
-        {isMaximized ? '⊟' : '⊞'}
-      </button>
-      <CytoscapeComponent
-        elements={elements}
-        stylesheet={stylesheet}
-        layout={LAYOUT_CONFIG}
-        className="graph-canvas"
-        cy={handleCyInit}
-      />
-    </>
+    <CytoscapeComponent
+      elements={elements}
+      stylesheet={stylesheet}
+      layout={LAYOUT_CONFIG}
+      className="graph-canvas"
+      cy={handleCyInit}
+    />
   );
 });
 
@@ -285,6 +276,7 @@ export default function App() {
   const [aiModal, setAiModal] = useState({ open: false, content: '' });
   const [showWelcome, setShowWelcome] = useState(true);
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
+  const [isGraphFullscreen, setIsGraphFullscreen] = useState(false);
 
   // Computed
   const isPathMode = mode === 'path';
@@ -403,6 +395,10 @@ export default function App() {
     setIsTableCollapsed(prev => !prev);
   }, []);
 
+  const toggleGraphFullscreen = useCallback(() => {
+    setIsGraphFullscreen(prev => !prev);
+  }, []);
+
   // Render
   return (
     <div className="app">
@@ -486,13 +482,18 @@ export default function App() {
           onToggleCollapse={toggleTableCollapse}
           isCollapsed={isTableCollapsed}
         />
-        <div className="graph-panel">
+        <div className={`graph-panel ${isGraphFullscreen ? 'fullscreen' : ''}`}>
+          <button
+            className="btn-maximize"
+            onClick={toggleGraphFullscreen}
+            title={isGraphFullscreen ? "Exit fullscreen" : "Fullscreen"}
+          >
+            {isGraphFullscreen ? '✕' : '⛶'}
+          </button>
           <NetworkGraph
             elements={elements}
             stylesheet={stylesheet}
             onNodeClick={handleNodeClick}
-            onToggleMaximize={toggleTableCollapse}
-            isMaximized={isTableCollapsed}
           />
         </div>
       </main>
