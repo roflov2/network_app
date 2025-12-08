@@ -126,7 +126,7 @@ const DataTable = memo(({ data, columns, selectedIdx, onSelect, onDownload, titl
 // ─────────────────────────────────────────────────────────────────────────────
 // NETWORK GRAPH
 // ─────────────────────────────────────────────────────────────────────────────
-const NetworkGraph = memo(({ elements, stylesheet, onNodeClick, onToggleMaximize, isMaximized }) => {
+const NetworkGraph = memo(({ elements, stylesheet, onNodeClick }) => {
   const cyRef = useRef(null);
   const onNodeClickRef = useRef(onNodeClick);
   const prevElementsLength = useRef(elements.length);
@@ -169,27 +169,18 @@ const NetworkGraph = memo(({ elements, stylesheet, onNodeClick, onToggleMaximize
     });
   }, []);
 
+  if (!elements.length) {
+    return <div className="graph-empty">Select a node to visualize the network</div>;
+  }
+
   return (
-    <>
-      <button
-        className="btn-maximize"
-        onClick={onToggleMaximize}
-        title={isMaximized ? "Restore graph" : "Maximize graph"}
-      >
-        {isMaximized ? '⊟' : '⊞'}
-      </button>
-      {!elements.length ? (
-        <div className="graph-empty">Select a node to visualize the network</div>
-      ) : (
-        <CytoscapeComponent
-          elements={elements}
-          stylesheet={stylesheet}
-          layout={LAYOUT_CONFIG}
-          className="graph-canvas"
-          cy={handleCyInit}
-        />
-      )}
-    </>
+    <CytoscapeComponent
+      elements={elements}
+      stylesheet={stylesheet}
+      layout={LAYOUT_CONFIG}
+      className="graph-canvas"
+      cy={handleCyInit}
+    />
   );
 });
 
@@ -487,12 +478,17 @@ export default function App() {
           isCollapsed={isTableCollapsed}
         />
         <div className="graph-panel">
+          <button
+            className="btn-maximize"
+            onClick={toggleTableCollapse}
+            title={isTableCollapsed ? "Restore graph" : "Maximize graph"}
+          >
+            {isTableCollapsed ? '⊟' : '⊞'}
+          </button>
           <NetworkGraph
             elements={elements}
             stylesheet={stylesheet}
             onNodeClick={handleNodeClick}
-            onToggleMaximize={toggleTableCollapse}
-            isMaximized={isTableCollapsed}
           />
         </div>
       </main>
