@@ -168,6 +168,58 @@ const NetworkGraph = memo(({ elements, stylesheet, onNodeClick }) => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// WELCOME MODAL
+// ─────────────────────────────────────────────────────────────────────────────
+const WelcomeModal = memo(({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal welcome-modal" onClick={(e) => e.stopPropagation()}>
+        <header>
+          <h3>Welcome to Network Explorer</h3>
+          <button onClick={onClose}>✕</button>
+        </header>
+        <div className="modal-body">
+          <p className="welcome-intro">
+            Discover connections between people, organisations, websites, and more.
+          </p>
+
+          <div className="welcome-section">
+            <h4>How to use</h4>
+            <ul>
+              <li><strong>Search</strong> - Type a name in the search box to find and explore any entity</li>
+              <li><strong>Click nodes</strong> - Click on any circle in the graph to see its connections</li>
+              <li><strong>Filter</strong> - Use the colored buttons to show/hide different types of entities</li>
+            </ul>
+          </div>
+
+          <div className="welcome-section">
+            <h4>Two viewing modes</h4>
+            <ul>
+              <li><strong>2-Hop</strong> - See everything connected to your selected item (and what those connect to)</li>
+              <li><strong>Path</strong> - Find how two items are connected to each other</li>
+            </ul>
+          </div>
+
+          <div className="welcome-section">
+            <h4>Tips</h4>
+            <ul>
+              <li>Numbers in brackets show how many documents mention that entity</li>
+              <li>Click any row in the table to highlight that connection in the graph</li>
+              <li>Download your results as a spreadsheet using the download button</li>
+            </ul>
+          </div>
+
+          <button className="btn-primary welcome-start" onClick={onClose}>
+            Get Started
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // AI MODAL
 // ─────────────────────────────────────────────────────────────────────────────
 const AiModal = memo(({ isOpen, content, onClose }) => {
@@ -176,7 +228,7 @@ const AiModal = memo(({ isOpen, content, onClose }) => {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <header>
-          <h3>🤖 AI Analysis</h3>
+          <h3>AI Analysis</h3>
           <button onClick={onClose}>✕</button>
         </header>
         <div className="modal-body">{content}</div>
@@ -202,6 +254,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
   const [aiModal, setAiModal] = useState({ open: false, content: '' });
+  const [showWelcome, setShowWelcome] = useState(true);
 
   // Computed
   const isPathMode = mode === 'path';
@@ -404,6 +457,11 @@ export default function App() {
         isOpen={aiModal.open}
         content={aiModal.content}
         onClose={() => setAiModal({ open: false, content: '' })}
+      />
+
+      <WelcomeModal
+        isOpen={showWelcome}
+        onClose={() => setShowWelcome(false)}
       />
     </div>
   );
