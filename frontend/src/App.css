@@ -426,6 +426,13 @@ tr.selected {
   min-height: 0;
 }
 
+.graph-panel.fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  min-height: auto;
+}
+
 .graph-canvas {
   width: 100%;
   height: 100%;
@@ -444,7 +451,7 @@ tr.selected {
   position: absolute;
   top: 12px;
   right: 12px;
-  z-index: 10;
+  z-index: 101;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -276,6 +276,7 @@ export default function App() {
   const [aiModal, setAiModal] = useState({ open: false, content: '' });
   const [showWelcome, setShowWelcome] = useState(true);
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
+  const [isGraphFullscreen, setIsGraphFullscreen] = useState(false);
 
   // Computed
   const isPathMode = mode === 'path';
@@ -392,6 +393,10 @@ export default function App() {
 
   const toggleTableCollapse = useCallback(() => {
     setIsTableCollapsed(prev => !prev);
+  }, []);
+
+  const toggleGraphFullscreen = useCallback(() => {
+    setIsGraphFullscreen(prev => !prev);
   }, []);
 
   // Render
