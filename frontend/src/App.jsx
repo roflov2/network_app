@@ -169,10 +169,6 @@ const NetworkGraph = memo(({ elements, stylesheet, onNodeClick, onToggleMaximize
     });
   }, []);
 
-  if (!elements.length) {
-    return <div className="graph-empty">Select a node to visualize the network</div>;
-  }
-
   return (
     <>
       <button
@@ -182,13 +178,17 @@ const NetworkGraph = memo(({ elements, stylesheet, onNodeClick, onToggleMaximize
       >
         {isMaximized ? '⊟' : '⊞'}
       </button>
-      <CytoscapeComponent
-        elements={elements}
-        stylesheet={stylesheet}
-        layout={LAYOUT_CONFIG}
-        className="graph-canvas"
-        cy={handleCyInit}
-      />
+      {!elements.length ? (
+        <div className="graph-empty">Select a node to visualize the network</div>
+      ) : (
+        <CytoscapeComponent
+          elements={elements}
+          stylesheet={stylesheet}
+          layout={LAYOUT_CONFIG}
+          className="graph-canvas"
+          cy={handleCyInit}
+        />
+      )}
     </>
   );
 });
