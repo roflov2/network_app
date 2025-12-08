@@ -11,19 +11,23 @@ import './App.css';
 const SearchInput = memo(({ label, value, onChange, onSelect, placeholder = "Search nodes..." }) => {
   const [options, setOptions] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const debouncedValue = useDebounce(value, 200);
 
   useEffect(() => {
     if (debouncedValue.length >= 2) {
       searchNodes(debouncedValue).then(results => {
         setOptions(results);
-        setIsOpen(results.length > 0);
+        // Only auto-open dropdown if user has interacted with the input
+        if (hasInteracted) {
+          setIsOpen(results.length > 0);
+        }
       }).catch(() => setOptions([]));
     } else {
       setOptions([]);
       setIsOpen(false);
     }
-  }, [debouncedValue]);
+  }, [debouncedValue, hasInteracted]);
 
   const handleSelect = (opt) => {
     onSelect(opt.value);
@@ -38,8 +42,14 @@ const SearchInput = memo(({ label, value, onChange, onSelect, placeholder = "Sea
         <input
           type="text"
           value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onFocus={() => options.length && setIsOpen(true)}
+          onChange={(e) => {
+            setHasInteracted(true);
+            onChange(e.target.value);
+          }}
+          onFocus={() => {
+            setHasInteracted(true);
+            if (options.length) setIsOpen(true);
+          }}
           placeholder={placeholder}
         />
         {isOpen && options.length > 0 && (
