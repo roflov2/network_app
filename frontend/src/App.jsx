@@ -482,13 +482,13 @@ export default function App() {
           onToggleCollapse={toggleTableCollapse}
           isCollapsed={isTableCollapsed}
         />
-        <div className={`graph-panel ${isGraphFullscreen ? 'fullscreen' : ''}`}>
+        <div className="graph-panel">
           <button
             className="btn-maximize"
-            onClick={toggleGraphFullscreen}
-            title={isGraphFullscreen ? "Exit fullscreen" : "Fullscreen"}
+            onClick={toggleTableCollapse}
+            title={isTableCollapsed ? "Restore graph" : "Maximize graph"}
           >
-            {isGraphFullscreen ? '✕' : '⛶'}
+            {isTableCollapsed ? '⊟' : '⊞'}
           </button>
           <NetworkGraph
             elements={elements}
