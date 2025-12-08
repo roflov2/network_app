@@ -81,16 +81,32 @@ body {
   border-radius: 4px;
 }
 
-.legend {
+.header-actions {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
 }
 
-.legend-dot {
-  width: 12px;
-  height: 12px;
+.btn-help {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 50%;
-  cursor: help;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-help:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-card);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -343,16 +359,24 @@ body {
 }
 
 .btn-icon {
-  background: transparent;
-  border: none;
-  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 12px;
+  color: var(--text-muted);
   cursor: pointer;
-  opacity: 0.6;
-  transition: opacity 0.2s;
+  transition: all 0.2s;
 }
 
 .btn-icon:hover {
-  opacity: 1;
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-card);
 }
 
 .table-scroll {
@@ -421,19 +445,23 @@ tr.selected {
   top: 12px;
   right: 12px;
   z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 8px 12px;
-  font-size: 18px;
+  font-size: 14px;
+  color: var(--text-muted);
   cursor: pointer;
-  opacity: 0.7;
   transition: all 0.2s;
 }
 
 .btn-maximize:hover {
-  opacity: 1;
   border-color: var(--accent);
+  color: var(--accent);
   background: var(--bg-elevated);
 }
 
