@@ -191,9 +191,9 @@ const AiModal = memo(({ isOpen, content, onClose }) => {
 export default function App() {
   // State
   const [mode, setMode] = useState('neighbor');
-  const [startNode, setStartNode] = useState('google');
+  const [startNode, setStartNode] = useState('Google');
   const [targetNode, setTargetNode] = useState('');
-  const [startSearch, setStartSearch] = useState('google');
+  const [startSearch, setStartSearch] = useState('Google');
   const [targetSearch, setTargetSearch] = useState('');
   const [allowedTypes, setAllowedTypes] = useState(Object.keys(ENTITY_TYPES));
   const [elements, setElements] = useState([]);
