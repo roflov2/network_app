@@ -93,10 +93,10 @@ const DataTable = memo(({ data, columns, selectedIdx, onSelect, onDownload, titl
       <h3>{title}</h3>
       <div className="table-header-actions">
         <button className="btn-icon" onClick={onDownload} title="Download CSV">
-          ⬇️
+          ↓
         </button>
         <button className="btn-icon" onClick={onToggleCollapse} title={isCollapsed ? "Expand table" : "Collapse table"}>
-          {isCollapsed ? '▶' : '◀'}
+          {isCollapsed ? '›' : '‹'}
         </button>
       </div>
     </div>
@@ -180,7 +180,7 @@ const NetworkGraph = memo(({ elements, stylesheet, onNodeClick, onToggleMaximize
         onClick={onToggleMaximize}
         title={isMaximized ? "Restore graph" : "Maximize graph"}
       >
-        {isMaximized ? '◧' : '⛶'}
+        {isMaximized ? '⊟' : '⊞'}
       </button>
       <CytoscapeComponent
         elements={elements}
@@ -230,8 +230,11 @@ const WelcomeModal = memo(({ isOpen, onClose }) => {
           <div className="welcome-section">
             <h4>Tips</h4>
             <ul>
+              <li>The 2-Hop graph is <strong>bipartite</strong> - it shows where the central node coexists with other entities in the same document</li>
+              <li>Document nodes act as hubs connecting entities that appear together</li>
               <li>Numbers in brackets show how many documents mention that entity</li>
               <li>Click any row in the table to highlight that connection in the graph</li>
+              <li>Use the maximize button on the graph to expand it for better viewing</li>
               <li>Download your results as a spreadsheet using the download button</li>
             </ul>
           </div>
@@ -409,10 +412,14 @@ export default function App() {
           <h1>Network Explorer</h1>
           <span className="badge">{Object.keys(ENTITY_TYPES).length} entity types</span>
         </div>
-        <div className="legend">
-          {Object.entries(ENTITY_TYPES).map(([t, { color }]) => (
-            <span key={t} className="legend-dot" style={{ background: color }} title={t} />
-          ))}
+        <div className="header-actions">
+          <button
+            className="btn-help"
+            onClick={() => setShowWelcome(true)}
+            title="Help"
+          >
+            ?
+          </button>
         </div>
       </header>
 
