@@ -458,6 +458,67 @@ tr.selected {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   WELCOME MODAL
+   ───────────────────────────────────────────────────────────────────────────── */
+.welcome-modal {
+  max-width: 520px;
+}
+
+.welcome-intro {
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.welcome-section {
+  margin-bottom: 20px;
+}
+
+.welcome-section h4 {
+  font-size: 14px;
+  color: var(--accent);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.welcome-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.welcome-section li {
+  padding: 6px 0;
+  padding-left: 16px;
+  position: relative;
+  font-size: 13px;
+}
+
+.welcome-section li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.welcome-section li strong {
+  color: var(--text);
+}
+
+.welcome-start {
+  display: block;
+  width: 100%;
+  margin-top: 24px;
+  padding: 12px;
+  font-size: 14px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    SCROLLBAR
    ───────────────────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
