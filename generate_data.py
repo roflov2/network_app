@@ -1,6 +1,8 @@
 import pandas as pd
 import random
 import networkx as nx
+import json
+import os
 
 def generate_real_data():
     print("Generating realistic data...")
@@ -218,13 +220,24 @@ def generate_real_data():
         
     df_desc = pd.DataFrame(descriptions)
     
-    # Save to pickle
-    print(f"Saving {len(df_edges)} edges to edges.pkl")
-    df_edges.to_pickle('edges.pkl')
-    
-    print(f"Saving {len(df_desc)} descriptions to desc.pkl")
-    df_desc.to_pickle('desc.pkl')
-    
+    # Determine output paths relative to script location
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    backend_dir = os.path.join(script_dir, 'backend')
+    frontend_dir = os.path.join(script_dir, 'frontend', 'src')
+
+    # Save to backend (pickle format)
+    print(f"Saving {len(df_edges)} edges to backend/edges.pkl")
+    df_edges.to_pickle(os.path.join(backend_dir, 'edges.pkl'))
+
+    print(f"Saving {len(df_desc)} descriptions to backend/desc.pkl")
+    df_desc.to_pickle(os.path.join(backend_dir, 'desc.pkl'))
+
+    # Save to frontend (JSON format for static deployment)
+    static_json_path = os.path.join(frontend_dir, 'staticData.json')
+    print(f"Saving {len(df_edges)} edges to frontend/src/staticData.json")
+    with open(static_json_path, 'w') as f:
+        json.dump(edges, f)
+
     print("Done!")
 
 if __name__ == "__main__":
