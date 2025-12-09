@@ -29,10 +29,22 @@ def generate_real_data():
     ]
     
     REAL_WEBSITES = [
-        "www.telstra.com.au", "www.google.com.au", "www.commbank.com.au", 
-        "www.bhp.com", "www.woolworths.com.au", "www.qantas.com", 
-        "www.atlassian.com", "www.canva.com", "www.riotinto.com", 
+        "www.telstra.com.au", "www.google.com.au", "www.commbank.com.au",
+        "www.bhp.com", "www.woolworths.com.au", "www.qantas.com",
+        "www.atlassian.com", "www.canva.com", "www.riotinto.com",
         "www.macquarie.com", "www.westpac.com.au", "www.nab.com.au"
+    ]
+
+    # Crypto wallet addresses (mix of Bitcoin, Ethereum, Litecoin formats)
+    REAL_CRYPTO_WALLETS = [
+        "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",  # Bitcoin (Satoshi's address)
+        "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy",  # Bitcoin P2SH
+        "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kygt080",  # Bitcoin Bech32
+        "0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe",  # Ethereum
+        "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed",  # Ethereum
+        "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B",  # Ethereum (Vitalik)
+        "LQTpS3VaYTjCr4s9Y1t5zbeY26zevf7Fb3",  # Litecoin
+        "ltc1qw508d6qejxtdg4y5r3zarvary0c5xw7kgmn4n9",  # Litecoin Bech32
     ]
 
     from faker import Faker
@@ -43,6 +55,7 @@ def generate_real_data():
     TARGET_ORGS = 150
     TARGET_PHONES = 300
     TARGET_WEBSITES = 150
+    TARGET_CRYPTO = 100
     
     # 1. People: Combine famous list with Faker names
     generated_people = [fake.name() for _ in range(TARGET_PEOPLE - len(REAL_PEOPLE))]
@@ -62,12 +75,41 @@ def generate_real_data():
          domain = fake.domain_name()
          generated_websites.append(f"www.{domain}")
     all_websites = list(set(REAL_WEBSITES + generated_websites))
+
+    # 5. Crypto Wallets: Generate realistic-looking wallet addresses
+    def generate_crypto_wallet():
+        """Generate a random crypto wallet address in various formats"""
+        wallet_type = random.choice(['btc_legacy', 'btc_p2sh', 'btc_bech32', 'eth', 'ltc'])
+        if wallet_type == 'btc_legacy':
+            # Bitcoin legacy (starts with 1)
+            chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+            return '1' + ''.join(random.choice(chars) for _ in range(33))
+        elif wallet_type == 'btc_p2sh':
+            # Bitcoin P2SH (starts with 3)
+            chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+            return '3' + ''.join(random.choice(chars) for _ in range(33))
+        elif wallet_type == 'btc_bech32':
+            # Bitcoin Bech32 (starts with bc1q)
+            chars = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'
+            return 'bc1q' + ''.join(random.choice(chars) for _ in range(38))
+        elif wallet_type == 'eth':
+            # Ethereum (starts with 0x)
+            chars = '0123456789abcdefABCDEF'
+            return '0x' + ''.join(random.choice(chars) for _ in range(40))
+        else:
+            # Litecoin (starts with L or M)
+            chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+            return random.choice('LM') + ''.join(random.choice(chars) for _ in range(33))
+
+    generated_crypto = [generate_crypto_wallet() for _ in range(TARGET_CRYPTO - len(REAL_CRYPTO_WALLETS))]
+    all_crypto = list(set(REAL_CRYPTO_WALLETS + generated_crypto))
     
     NUM_DOCS = 180
     docs = [f"DOC-{fake.unique.random_int(min=1000, max=9999)}" for _ in range(NUM_DOCS)]
     
-    all_nodes = all_people + all_orgs + docs + all_phones + all_websites
+    all_nodes = all_people + all_orgs + docs + all_phones + all_websites + all_crypto
     print(f"Total nodes generated: {len(all_nodes)}")
+    print(f"  - People: {len(all_people)}, Orgs: {len(all_orgs)}, Phones: {len(all_phones)}, Websites: {len(all_websites)}, Crypto: {len(all_crypto)}, Docs: {len(docs)}")
     
     edges = []
     
@@ -116,6 +158,13 @@ def generate_real_data():
             for _ in range(random.randint(1, 2)):
                 web = random.choice(all_websites)
                 add_edge(doc, web, 'MENTIONS', 'Website')
+
+        # 5. CRYPTO WALLET ENTITIES
+        # A document mentions 0-2 crypto wallets (less common)
+        if random.random() > 0.6:
+            for _ in range(random.randint(1, 2)):
+                wallet = random.choice(all_crypto)
+                add_edge(doc, wallet, 'MENTIONS', 'Crypto')
 
     # --- INJECT TEST DATA FOR PATHFINDING ---
     # Create multiple paths between "Daniel Craig" and "Google"

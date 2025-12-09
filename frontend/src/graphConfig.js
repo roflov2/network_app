@@ -5,6 +5,7 @@ export const ENTITY_TYPES = {
     Organisation: { shape: 'triangle', color: '#ffd43b' },
     Phone: { shape: 'diamond', color: '#51cf66' },
     Website: { shape: 'hexagon', color: '#cc5de8' },
+    Crypto: { shape: 'octagon', color: '#f59f00' },
 };
 
 // Base graph styling
