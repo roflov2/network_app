@@ -6,7 +6,6 @@ import pickle
 from typing import List, Optional
 from pydantic import BaseModel
 import os
-from llm_call import analyze_network_relationships
 
 app = FastAPI()
 
@@ -213,16 +212,6 @@ def get_shortest_paths(start: str, target: str):
         
     except nx.NetworkXNoPath:
         return {"elements": [], "table_data": [], "message": "No path found"}
-
-class AnalysisRequest(BaseModel):
-    start_node: str
-    nodes: List[str]
-
-@app.post("/analyze")
-def analyze_network(request: AnalysisRequest):
-    # Logic to get descriptions for nodes
-    # ... (similar to get_ai_analysis_data)
-    return {"summary": "Analysis placeholder"}
 
 if __name__ == "__main__":
     import uvicorn

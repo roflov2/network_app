@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 // Debounce hook for search inputs
 export const useDebounce = (value, delay = 300) => {
@@ -10,67 +10,6 @@ export const useDebounce = (value, delay = 300) => {
     }, [value, delay]);
 
     return debouncedValue;
-};
-
-// Node search hook
-export const useNodeSearch = (searchFn) => {
-    const [query, setQuery] = useState('');
-    const [options, setOptions] = useState([]);
-    const [isOpen, setIsOpen] = useState(false);
-    const [selected, setSelected] = useState(null);
-
-    const debouncedQuery = useDebounce(query, 200);
-
-    useEffect(() => {
-        if (debouncedQuery.length >= 2) {
-            searchFn(debouncedQuery).then(setOptions).catch(() => setOptions([]));
-            setIsOpen(true);
-        } else {
-            setOptions([]);
-            setIsOpen(false);
-        }
-    }, [debouncedQuery, searchFn]);
-
-    const select = useCallback((node) => {
-        setSelected(node);
-        setQuery(node.label);
-        setIsOpen(false);
-    }, []);
-
-    const clear = useCallback(() => {
-        setSelected(null);
-        setQuery('');
-        setOptions([]);
-    }, []);
-
-    return { query, setQuery, options, isOpen, setIsOpen, selected, select, clear };
-};
-
-// Graph data hook
-export const useGraphData = (fetchFn, deps = []) => {
-    const [data, setData] = useState({ elements: [], tableData: [] });
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-
-    const fetch = useCallback(async (...args) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const result = await fetchFn(...args);
-            setData(result);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    }, [fetchFn]);
-
-    const clear = useCallback(() => {
-        setData({ elements: [], tableData: [] });
-        setError(null);
-    }, []);
-
-    return { ...data, loading, error, fetch, clear };
 };
 
 // CSV export utility

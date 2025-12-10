@@ -222,10 +222,3 @@ export const getPaths = async (start, target) => {
 
     return { elements, table_data: tableData };
 };
-
-// AI analysis (placeholder for static mode)
-export const analyzeNetwork = async (startNode, nodeList) => {
-    return {
-        summary: `Static demo mode - AI analysis requires backend connection.\n\nNetwork centered on "${startNode}" with ${nodeList.length} nodes.`
-    };
-};

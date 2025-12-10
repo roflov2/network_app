@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, memo, useRef, useEffect } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
-import { searchNodes, getNeighbors, getPaths, analyzeNetwork } from './api';
+import { searchNodes, getNeighbors, getPaths } from './api';
 import { useDebounce, exportToCsv } from './hooks';
 import { ENTITY_TYPES, getStylesheet, LAYOUT_CONFIG } from './graphConfig';
 import './App.css';
@@ -239,23 +239,7 @@ const WelcomeModal = memo(({ isOpen, onClose }) => {
   );
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// AI MODAL
-// ─────────────────────────────────────────────────────────────────────────────
-const AiModal = memo(({ isOpen, content, onClose }) => {
-  if (!isOpen) return null;
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <header>
-          <h3>AI Analysis</h3>
-          <button onClick={onClose}>✕</button>
-        </header>
-        <div className="modal-body">{content}</div>
-      </div>
-    </div>
-  );
-});
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN APP
@@ -273,10 +257,10 @@ export default function App() {
   const [selectedRow, setSelectedRow] = useState(null);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
-  const [aiModal, setAiModal] = useState({ open: false, content: '' });
+
   const [showWelcome, setShowWelcome] = useState(true);
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
-  const [isGraphFullscreen, setIsGraphFullscreen] = useState(false);
+
 
   // Computed
   const isPathMode = mode === 'path';
@@ -329,7 +313,7 @@ export default function App() {
       } else {
         setStatus('Select target node');
       }
-    } catch (err) {
+    } catch {
       setStatus('Error: Check backend connection');
     } finally {
       setLoading(false);
@@ -368,16 +352,7 @@ export default function App() {
     );
   }, []);
 
-  const handleAiAnalysis = useCallback(async () => {
-    setAiModal({ open: true, content: 'Analyzing...' });
-    try {
-      const nodeIds = elements.filter(e => !e.data.source).map(e => e.data.id);
-      const res = await analyzeNetwork(startNode, nodeIds);
-      setAiModal({ open: true, content: res.summary || 'No analysis available' });
-    } catch {
-      setAiModal({ open: true, content: 'Analysis failed. Check API key.' });
-    }
-  }, [startNode, elements]);
+
 
   const handleStartSelect = useCallback((val) => {
     setStartNode(val);
@@ -395,9 +370,7 @@ export default function App() {
     setIsTableCollapsed(prev => !prev);
   }, []);
 
-  const toggleGraphFullscreen = useCallback(() => {
-    setIsGraphFullscreen(prev => !prev);
-  }, []);
+
 
   // Render
   return (
@@ -450,15 +423,6 @@ export default function App() {
 
         <div className="toolbar-actions">
           <button className="btn-secondary" onClick={handleClear}>Clear</button>
-{/* Analyze button hidden for now
-          <button
-            className="btn-primary"
-            onClick={handleAiAnalysis}
-            disabled={!startNode || isPathMode}
-          >
-            🤖 Analyze
-          </button>
-*/}
         </div>
       </div>
 
@@ -498,11 +462,7 @@ export default function App() {
         </div>
       </main>
 
-      <AiModal
-        isOpen={aiModal.open}
-        content={aiModal.content}
-        onClose={() => setAiModal({ open: false, content: '' })}
-      />
+
 
       <WelcomeModal
         isOpen={showWelcome}
