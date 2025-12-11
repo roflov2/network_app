@@ -68,9 +68,34 @@ const HIGHLIGHT = {
     },
 };
 
+// Quick consistent color generator for communities
+const getCommunityColor = (id) => {
+    const colors = [
+        '#e94560', '#51cf66', '#4dabf7', '#ffd43b', '#cc5de8',
+        '#f59f00', '#20c997', '#ff6b6b', '#845ef7', '#339af0'
+    ];
+    return colors[parseInt(id) % colors.length] || '#eaeaea';
+};
+
 // Generate stylesheet with highlights
-export const getStylesheet = (startNode, targetNode, selection) => {
-    const styles = [...BASE_STYLES];
+export const getStylesheet = (startNode, targetNode, selection, viewMode) => {
+    // If in community mode, override base styles for node coloring
+    let currentBaseStyles = BASE_STYLES;
+
+    if (viewMode === 'community') {
+        currentBaseStyles = [
+            ...BASE_STYLES.filter(s => !s.selector.includes('node[type=')),
+            {
+                selector: 'node[community]',
+                style: {
+                    'background-color': (ele) => getCommunityColor(ele.data('community')),
+                    shape: 'ellipse' // Uniform shape for community view or keep original?
+                }
+            }
+        ];
+    }
+
+    const styles = [...currentBaseStyles];
 
     if (startNode) {
         styles.push({ selector: `node[id="${startNode}"]`, style: HIGHLIGHT.start });

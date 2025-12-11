@@ -24,7 +24,10 @@ df = None
 df_desc = None
 node_types = {}
 global_counts = {}
+global_counts = {}
 desc_lookup = {}
+community_map = {}  # Node -> Community ID
+communities = {}    # ID -> {nodes, size, top_terms}
 
 # Constants
 MAX_NODES = 100
@@ -33,7 +36,7 @@ REV_DOC_EDGE_TYPES = {'CONTAINS', 'MENTIONS', 'HAS'}
 
 @app.on_event("startup")
 async def startup_event():
-    global G, df, df_desc, node_types, global_counts, desc_lookup
+    global G, df, df_desc, node_types, global_counts, desc_lookup, communities, community_map
     
     print("Loading data...")
     try:
@@ -54,15 +57,90 @@ async def startup_event():
                      {n for n in G.nodes() if isinstance(n, str) and n.startswith(('REF-', 'DOC-'))})
         
         global_counts = {n: sum(1 for nb in G.neighbors(n) if nb in documents) if n not in documents else 0 for n in G.nodes()}
+        global_counts = {n: sum(1 for nb in G.neighbors(n) if nb in documents) if n not in documents else 0 for n in G.nodes()}
         desc_lookup = dict(zip(df_desc['Reference Number'], df_desc['Description']))
+
+        # === COMMUNITY DETECTION ===
+        print("Calculating communities (Louvain)...")
+        # Louvain returns a list of sets
+        comm_sets = nx.community.louvain_communities(G, seed=42)
         
-        print("Data loaded successfully.")
+        community_map = {}
+        communities = {}
+        
+        for idx, nodes in enumerate(comm_sets):
+            comm_id = str(idx + 1)
+            # Store map for O(1) lookup
+            for n in nodes:
+                community_map[n] = comm_id
+                
+            # Store community stats
+            communities[comm_id] = {
+                'id': comm_id,
+                'size': len(nodes),
+                'nodes': list(nodes),
+                'label': f"Community {comm_id}" 
+            }
+            
+        # Add community attribute to graph nodes
+        nx.set_node_attributes(G, community_map, 'community')
+        
+        print(f"Data loaded successfully. Found {len(communities)} communities.")
     except Exception as e:
         print(f"Error loading data: {e}")
 
 @app.get("/")
 def read_root():
     return {"message": "Network Explorer API"}
+
+@app.get("/communities")
+def get_communities():
+    # Return list of communities sorted by size
+    return sorted(
+        [{'id': c['id'], 'label': c['label'], 'size': c['size']} for c in communities.values()],
+        key=lambda x: x['size'], reverse=True
+    )
+
+@app.get("/community/{comm_id}")
+def get_community_graph(comm_id: str):
+    if comm_id not in communities:
+        raise HTTPException(status_code=404, detail="Community not found")
+        
+    comm_nodes = communities[comm_id]['nodes']
+    sub = G.subgraph(comm_nodes)
+    
+    elements = []
+    # Nodes
+    for n in sub.nodes():
+        elements.append({
+            'data': {
+                'id': str(n),
+                'label': f"{n}",
+                'type': node_types.get(n, 'Document'),
+                'community': comm_id,
+                'count': global_counts.get(n, 0)
+            }
+        })
+        
+    # Edges (internal to community)
+    seen_edges = set()
+    for u, v in sub.edges():
+        edge_id = f"{u}-{v}"
+        elements.append({'data': {'source': str(u), 'target': str(v), 'id': edge_id}})
+        seen_edges.add(edge_id)
+        
+    # Edge Table (for timeline and list)
+    edge_table = sorted([
+        {
+            'Source': str(u), 
+            'Target': str(v),
+            'Edge_Type': G[u][v].get('Edge_Type', 'CONNECTED'),
+            'Date': G[u][v].get('Date', '')
+        }
+        for u, v in sub.edges()
+    ], key=lambda x: x['Date'])
+
+    return {"elements": elements, "table_data": edge_table}
 
 @app.get("/search")
 def search_nodes(q: str):

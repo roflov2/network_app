@@ -45,3 +45,27 @@ export const getPaths = async (start, target) => {
         return { elements: [], table_data: [], message: 'Error fetching paths' };
     }
 };
+
+// Get list of communities
+export const getCommunities = async () => {
+    try {
+        const response = await fetch(`${API_BASE}/communities`);
+        if (!response.ok) throw new Error('Failed to get communities');
+        return await response.json();
+    } catch (error) {
+        console.error('Communities error:', error);
+        return [];
+    }
+};
+
+// Get community subgraph
+export const getCommunityGraph = async (commId) => {
+    try {
+        const response = await fetch(`${API_BASE}/community/${encodeURIComponent(commId)}`);
+        if (!response.ok) throw new Error('Failed to get community graph');
+        return await response.json();
+    } catch (error) {
+        console.error('Community graph error:', error);
+        return { elements: [], table_data: [] };
+    }
+};

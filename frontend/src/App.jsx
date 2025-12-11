@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, memo, useRef, useEffect } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
-import { searchNodes, getNeighbors, getPaths } from './api';
+import { searchNodes, getNeighbors, getPaths, getCommunities, getCommunityGraph } from './api';
 import { useDebounce, exportToCsv } from './hooks';
 import { ENTITY_TYPES, getStylesheet, LAYOUT_CONFIG } from './graphConfig';
 import Timeline from './Timeline';
@@ -259,18 +259,22 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
 
+  const [communities, setCommunities] = useState([]);
+  const [selectedCommunity, setSelectedCommunity] = useState(null);
+
   const [showWelcome, setShowWelcome] = useState(true);
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
 
 
   // Computed
   const isPathMode = mode === 'path';
-  const columns = useMemo(() =>
-    isPathMode && targetNode
-      ? ['Path', 'Length', 'Route']
-      : ['Source', 'Source_Count', 'Target', 'Target_Count', 'Edge_Type', 'Date'],
-    [isPathMode, targetNode]
-  );
+  const isCommunityMode = mode === 'community';
+
+  const columns = useMemo(() => {
+    if (isPathMode && targetNode) return ['Path', 'Length', 'Route'];
+    if (isCommunityMode && !selectedCommunity) return ['id', 'label', 'size']; // Community List columns
+    return ['Source', 'Source_Count', 'Target', 'Target_Count', 'Edge_Type', 'Date'];
+  }, [isPathMode, targetNode, isCommunityMode, selectedCommunity]);
 
   const selection = useMemo(() => {
     if (selectedRow === null || !tableData[selectedRow]) return null;
@@ -282,8 +286,8 @@ export default function App() {
   }, [selectedRow, tableData]);
 
   const stylesheet = useMemo(
-    () => getStylesheet(startNode, targetNode, selection),
-    [startNode, targetNode, selection]
+    () => getStylesheet(startNode, targetNode, selection, mode),
+    [startNode, targetNode, selection, mode]
   );
 
   // Timeline Data Aggregation
@@ -330,6 +334,23 @@ export default function App() {
         setTableData(res.table_data || []);
         const nodeCount = res.elements?.filter(e => !e.data.source).length || 0;
         setStatus(`${nodeCount} nodes · ${res.table_data?.length || 0} edges`);
+      } else if (mode === 'community') {
+        if (!selectedCommunity) {
+          // Load list of communities
+          const comms = await getCommunities();
+          setCommunities(comms);
+          // When listing communities, we might show empty graph or just the table
+          setElements([]);
+          setTableData(comms);
+          setStatus(`${comms.length} communities found`);
+        } else {
+          // Load specific community graph
+          const res = await getCommunityGraph(selectedCommunity);
+          setElements(res.elements || []);
+          setTableData(res.table_data || []);
+          setStartNode(`Community ${selectedCommunity}`); // Mock for timeline title
+          setStatus(`Community ${selectedCommunity}: ${res.elements?.length || 0} elements`);
+        }
       } else if (targetNode) {
         const res = await getPaths(startNode, targetNode);
         setElements(res.elements || []);
@@ -343,7 +364,7 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  }, [startNode, targetNode, mode, allowedTypes]);
+  }, [startNode, targetNode, mode, allowedTypes, selectedCommunity]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -420,11 +441,14 @@ export default function App() {
       {/* Toolbar */}
       <div className="toolbar">
         <div className="mode-switch">
-          <button className={mode === 'neighbor' ? 'active' : ''} onClick={() => setMode('neighbor')}>
+          <button className={mode === 'neighbor' ? 'active' : ''} onClick={() => { setMode('neighbor'); setStartNode('Google'); }}>
             2-Hop
           </button>
           <button className={mode === 'path' ? 'active' : ''} onClick={() => setMode('path')}>
             Path
+          </button>
+          <button className={mode === 'community' ? 'active' : ''} onClick={() => { setMode('community'); setSelectedCommunity(null); }}>
+            Community
           </button>
         </div>
 
@@ -465,7 +489,14 @@ export default function App() {
           data={tableData}
           columns={columns}
           selectedIdx={selectedRow}
-          onSelect={setSelectedRow}
+          onSelect={(idx) => {
+            if (mode === 'community' && !selectedCommunity) {
+              const comm = tableData[idx];
+              if (comm) setSelectedCommunity(comm.id);
+            } else {
+              setSelectedRow(idx);
+            }
+          }}
           onDownload={() => exportToCsv(tableData, 'network_data.csv')}
           title={isPathMode && targetNode ? 'Paths' : 'Edges'}
           onToggleCollapse={toggleTableCollapse}
@@ -488,10 +519,10 @@ export default function App() {
       </main>
 
       {/* Timeline Visualization */}
-      {mode === 'neighbor' && startNode && (
+      {((mode === 'neighbor' && startNode) || (mode === 'community' && selectedCommunity)) && (
         <Timeline
           data={timelineData}
-          title={startNode}
+          title={mode === 'community' ? `Community ${selectedCommunity}` : startNode}
         />
       )}
 
