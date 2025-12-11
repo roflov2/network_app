@@ -3,6 +3,7 @@ import CytoscapeComponent from 'react-cytoscapejs';
 import { searchNodes, getNeighbors, getPaths } from './api';
 import { useDebounce, exportToCsv } from './hooks';
 import { ENTITY_TYPES, getStylesheet, LAYOUT_CONFIG } from './graphConfig';
+import Timeline from './Timeline';
 import './App.css';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -267,7 +268,7 @@ export default function App() {
   const columns = useMemo(() =>
     isPathMode && targetNode
       ? ['Path', 'Length', 'Route']
-      : ['Source', 'Source_Count', 'Target', 'Target_Count', 'Edge_Type'],
+      : ['Source', 'Source_Count', 'Target', 'Target_Count', 'Edge_Type', 'Date'],
     [isPathMode, targetNode]
   );
 
@@ -284,6 +285,30 @@ export default function App() {
     () => getStylesheet(startNode, targetNode, selection),
     [startNode, targetNode, selection]
   );
+
+  // Timeline Data Aggregation
+  const timelineData = useMemo(() => {
+    if (!tableData || tableData.length === 0 || !startNode) return [];
+
+    const dateCounts = {};
+
+    tableData.forEach(row => {
+      const dateStr = row.Date;
+      if (!dateStr) return;
+
+      // Bucket by Month (YYYY-MM)
+      // Assuming ISO format YYYY-MM-DD
+      const monthBucket = dateStr.substring(0, 7);
+
+      if (monthBucket.match(/^\d{4}-\d{2}$/)) {
+        dateCounts[monthBucket] = (dateCounts[monthBucket] || 0) + 1;
+      }
+    });
+
+    return Object.entries(dateCounts)
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }, [tableData, startNode]);
 
   // Data fetching
   const fetchData = useCallback(async () => {
@@ -461,6 +486,14 @@ export default function App() {
           />
         </div>
       </main>
+
+      {/* Timeline Visualization */}
+      {mode === 'neighbor' && startNode && (
+        <Timeline
+          data={timelineData}
+          title={startNode}
+        />
+      )}
 
 
 

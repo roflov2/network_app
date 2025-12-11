@@ -42,7 +42,7 @@ async def startup_event():
         df = pd.read_pickle(os.path.join(base_dir, 'edges.pkl'))
         df_desc = pd.read_pickle(os.path.join(base_dir, 'desc.pkl'))
         
-        G = nx.from_pandas_edgelist(df, 'Source', 'Target', edge_attr='Edge_Type')
+        G = nx.from_pandas_edgelist(df, 'Source', 'Target', edge_attr=['Edge_Type', 'Date'])
         
         node_types = dict(zip(df['Target'], df['Target_Type']))
         # Update node types for nodes not in target column (sources that are documents)
@@ -157,7 +157,8 @@ def get_neighbors(node_id: str, allowed_types: Optional[str] = None):
             'Target_Count': global_counts.get(v, 0), 
             'Edge_Type': G[u][v].get('Edge_Type', 'CONNECTED'),
             'Source_Type': node_types.get(u, 'Document'), 
-            'Target_Type': node_types.get(v, 'Document')
+            'Target_Type': node_types.get(v, 'Document'),
+            'Date': G[u][v].get('Date', '')
         }
         for u, v in sub.edges()
     ], key=lambda x: x['Target_Count'], reverse=True)

@@ -116,12 +116,13 @@ def generate_real_data():
     edges = []
     
     # Helper to add edge
-    def add_edge(source, target, edge_type, target_type):
+    def add_edge(source, target, edge_type, target_type, date):
         edges.append({
             'Source': source,
             'Target': target,
             'Edge_Type': edge_type,
-            'Target_Type': target_type
+            'Target_Type': target_type,
+            'Date': date.isoformat() if hasattr(date, 'isoformat') else date
         })
 
     # Generate Edges - STRICT BIPARTITE/DOCUMENT-CENTRIC MODEL
@@ -131,13 +132,14 @@ def generate_real_data():
     
     for doc in docs:
         topic = fake.bs()
+        doc_date = fake.date_between(start_date='-2y', end_date='today')
         
         # 1. PERSON ENTITIES
         # A document mentions 2-6 people
         doc_people = []
         for _ in range(random.randint(2, 6)):
             p = random.choice(all_people)
-            add_edge(doc, p, 'MENTIONS', 'Person')
+            add_edge(doc, p, 'MENTIONS', 'Person', doc_date)
             # Inverse edge (optional but good for graph traversal if undirected)
             # add_edge(p, doc, 'APPEARS_IN', 'Document') 
             doc_people.append(p)
@@ -146,27 +148,27 @@ def generate_real_data():
         # A document mentions 1-3 organisations
         for _ in range(random.randint(1, 3)):
             org = random.choice(all_orgs)
-            add_edge(doc, org, 'MENTIONS', 'Organisation')
+            add_edge(doc, org, 'MENTIONS', 'Organisation', doc_date)
             
         # 3. PHONE ENTITIES
         # A document contains 1-2 phone numbers (often linked to the people/orgs conceptually)
         for _ in range(random.randint(1, 2)):
             phone = random.choice(all_phones)
-            add_edge(doc, phone, 'MENTIONS', 'Phone')
+            add_edge(doc, phone, 'MENTIONS', 'Phone', doc_date)
             
         # 4. WEBSITE ENTITIES
         # A document mentions 0-2 websites
         if random.random() > 0.4:
             for _ in range(random.randint(1, 2)):
                 web = random.choice(all_websites)
-                add_edge(doc, web, 'MENTIONS', 'Website')
+                add_edge(doc, web, 'MENTIONS', 'Website', doc_date)
 
         # 5. CRYPTO WALLET ENTITIES
         # A document mentions 0-2 crypto wallets (less common)
         if random.random() > 0.6:
             for _ in range(random.randint(1, 2)):
                 wallet = random.choice(all_crypto)
-                add_edge(doc, wallet, 'MENTIONS', 'Crypto')
+                add_edge(doc, wallet, 'MENTIONS', 'Crypto', doc_date)
 
     # --- INJECT TEST DATA FOR PATHFINDING ---
     # Create multiple paths between "Daniel Craig" and "Google"
@@ -181,12 +183,12 @@ def generate_real_data():
     
     # Ensure they exist in our lists (should be there from REAL_PEOPLE/REAL_ORGS)
     if target_person in all_people:
-        add_edge(test_doc_1, target_person, 'MENTIONS', 'Person')
-        add_edge(test_doc_2, target_person, 'MENTIONS', 'Person')
+        add_edge(test_doc_1, target_person, 'MENTIONS', 'Person', '2023-10-15')
+        add_edge(test_doc_2, target_person, 'MENTIONS', 'Person', '2023-11-20')
         
     if target_org in all_orgs:
-        add_edge(test_doc_1, target_org, 'MENTIONS', 'Organisation')
-        add_edge(test_doc_2, target_org, 'MENTIONS', 'Organisation')
+        add_edge(test_doc_1, target_org, 'MENTIONS', 'Organisation', '2023-10-15')
+        add_edge(test_doc_2, target_org, 'MENTIONS', 'Organisation', '2023-11-20')
         
     # Create DataFrame
     df_edges = pd.DataFrame(edges)
