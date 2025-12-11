@@ -37,8 +37,10 @@ async def startup_event():
     
     print("Loading data...")
     try:
-        df = pd.read_pickle('edges.pkl')
-        df_desc = pd.read_pickle('desc.pkl')
+        # Use absolute path to ensure files are found regardless of CWD
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        df = pd.read_pickle(os.path.join(base_dir, 'edges.pkl'))
+        df_desc = pd.read_pickle(os.path.join(base_dir, 'desc.pkl'))
         
         G = nx.from_pandas_edgelist(df, 'Source', 'Target', edge_attr='Edge_Type')
         
