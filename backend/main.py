@@ -85,7 +85,26 @@ async def startup_event():
         # Add community attribute to graph nodes
         nx.set_node_attributes(G, community_map, 'community')
         
-        print(f"Data loaded successfully. Found {len(communities)} communities.")
+        # === META-GRAPH (Community Integrations) ===
+        # Calculate edges between communities
+        print("Calculating meta-graph...")
+        inter_community_edges = {} # (comm_a, comm_b) -> weight
+        
+        for u, v in G.edges():
+            c_u = community_map.get(u)
+            c_v = community_map.get(v)
+            
+            if c_u and c_v and c_u != c_v:
+                # Undirected graph logic: always store sorted tuple
+                edge_key = tuple(sorted((c_u, c_v)))
+                inter_community_edges[edge_key] = inter_community_edges.get(edge_key, 0) + 1
+        
+        # Store edges in communities dict? Or separate? 
+        # Easier to just build elements dynamically in endpoint, or store global variable
+        communities['meta_edges'] = inter_community_edges 
+        
+        print(f"Data loaded successfully. Found {len(communities)-1} communities.")
+
     except Exception as e:
         print(f"Error loading data: {e}")
 
@@ -95,11 +114,43 @@ def read_root():
 
 @app.get("/communities")
 def get_communities():
-    # Return list of communities sorted by size
-    return sorted(
-        [{'id': c['id'], 'label': c['label'], 'size': c['size']} for c in communities.values()],
+    # 1. Meta-Graph Elements
+    elements = []
+    
+    # Community Nodes
+    # Filter out 'meta_edges' from iteration
+    comm_list = [c for k, c in communities.items() if k != 'meta_edges']
+    
+    for c in comm_list:
+        elements.append({
+            'data': {
+                'id': f"COMM-{c['id']}",
+                'label': f"{c['label']}\n({c['size']})",
+                'size': c['size'],
+                'type': 'Community',
+                'community': c['id'] # Color by self
+            }
+        })
+        
+    # Meta Edges
+    meta_edges = communities.get('meta_edges', {})
+    for (source, target), weight in meta_edges.items():
+        elements.append({
+            'data': {
+                'source': f"COMM-{source}",
+                'target': f"COMM-{target}",
+                'id': f"META-{source}-{target}",
+                'weight': weight
+            }
+        })
+
+    # 2. Table Data (List of Communities)
+    table_data = sorted(
+        [{'id': c['id'], 'label': c['label'], 'size': c['size']} for c in comm_list],
         key=lambda x: x['size'], reverse=True
     )
+
+    return {"elements": elements, "table_data": table_data}
 
 @app.get("/community/{comm_id}")
 def get_community_graph(comm_id: str):

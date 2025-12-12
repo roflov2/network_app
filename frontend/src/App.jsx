@@ -231,6 +231,16 @@ const WelcomeModal = memo(({ isOpen, onClose }) => {
             </ul>
           </div>
 
+          <div className="welcome-section">
+            <h4>Community Detection</h4>
+            <ul>
+              <li>The network is automatically clustered into communities using the <strong>Louvain method</strong>.</li>
+              <li>The <strong>Community</strong> tab initially shows a "Meta-Graph" of how these communities interact.</li>
+              <li>Click a Community Node to "drill down" and see the specific entities inside it.</li>
+              <li>Entities are colored by their community to show group membership.</li>
+            </ul>
+          </div>
+
           <button className="btn-primary welcome-start" onClick={onClose}>
             Get Started
           </button>
@@ -338,11 +348,12 @@ export default function App() {
         if (!selectedCommunity) {
           // Load list of communities
           const comms = await getCommunities();
-          setCommunities(comms);
-          // When listing communities, we might show empty graph or just the table
-          setElements([]);
-          setTableData(comms);
-          setStatus(`${comms.length} communities found`);
+          setCommunities(comms.table_data || []);
+          // Render Meta-Graph (Community Nodes)
+          setElements(comms.elements || []);
+          setTableData(comms.table_data || []);
+          setStatus(`${comms.table_data?.length || 0} communities found`);
+          setStartNode(''); // Clear start node to avoid coloring interference in config
         } else {
           // Load specific community graph
           const res = await getCommunityGraph(selectedCommunity);
@@ -370,6 +381,13 @@ export default function App() {
 
   // Handlers
   const handleNodeClick = useCallback((nodeId) => {
+    if (mode === 'community' && nodeId.startsWith('COMM-')) {
+      // Drill down into community
+      const commId = nodeId.replace('COMM-', '');
+      setSelectedCommunity(commId);
+      return;
+    }
+
     if (isPathMode && startNode && nodeId !== startNode) {
       setTargetNode(nodeId);
       setTargetSearch(nodeId);
@@ -379,7 +397,7 @@ export default function App() {
       setTargetNode('');
       setTargetSearch('');
     }
-  }, [isPathMode, startNode]);
+  }, [isPathMode, startNode, mode]);
 
   const handleClear = useCallback(() => {
     setStartNode('');

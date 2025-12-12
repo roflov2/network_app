@@ -84,12 +84,32 @@ export const getStylesheet = (startNode, targetNode, selection, viewMode) => {
 
     if (viewMode === 'community') {
         currentBaseStyles = [
+            // Filter out existing type-based background colors but KEEP everything else
             ...BASE_STYLES.filter(s => !s.selector.includes('node[type=')),
+            // Re-apply shapes based on type (since we filtered out the original blocks which had both color and shape)
+            ...Object.entries(ENTITY_TYPES).map(([type, cfg]) => ({
+                selector: `node[type="${type}"]`,
+                style: { 'shape': cfg.shape }
+            })),
+            // Apply community-based coloring
             {
                 selector: 'node[community]',
                 style: {
                     'background-color': (ele) => getCommunityColor(ele.data('community')),
-                    shape: 'ellipse' // Uniform shape for community view or keep original?
+                }
+            },
+            // Special styling for the Meta-Graph "Community" nodes
+            {
+                selector: 'node[type="Community"]',
+                style: {
+                    'shape': 'ellipse',
+                    'width': (ele) => Math.max(60, Math.min(150, (ele.data('size') || 10) * 1.5)),
+                    'height': (ele) => Math.max(60, Math.min(150, (ele.data('size') || 10) * 1.5)),
+                    'background-color': (ele) => getCommunityColor(ele.data('community')),
+                    'font-size': 16,
+                    'font-weight': 'bold',
+                    'border-width': 4,
+                    'border-color': '#fff'
                 }
             }
         ];
