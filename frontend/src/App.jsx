@@ -351,7 +351,7 @@ export default function App() {
 
   // Data fetching
   const fetchData = useCallback(async () => {
-    if (!startNode) {
+    if (!startNode && mode !== 'community') {
       setElements([]);
       setTableData([]);
       setStatus('');
