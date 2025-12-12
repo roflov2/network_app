@@ -223,26 +223,31 @@ export const getStylesheet = (startNode, targetNode, selection, viewMode) => {
 export const LAYOUT_CONFIG = {
     name: 'cose',
     animate: true,
-    animationDuration: 1500,     // Slower animation for bounce
-    animationEasing: 'ease-out-elastic', // Bounce physics!
+    animationDuration: 1000,
+    animationEasing: 'ease-out-cubic', // Smoother expansion, less wobble
     refresh: 20,
     fit: true,
-    padding: 30,
+    padding: 100,                // Generous padding for the spread
     randomize: false,
-    componentSpacing: 120,
-    // Increased repulsion for better separation
+    componentSpacing: 300,       // Keep disjoint parts far apart
+
+    // Physics Engine Tuning: MAXIMIZE SPREAD
     nodeRepulsion: (node) =>
-        node.data('type') === 'Community' ? 10000000 : // Massive repulsion for meta-bubbles
-            node.data('type') === 'Document' ? 2000000 : 400000,
-    nodeOverlap: 20,
+        node.data('type') === 'Community' ? 25000000 : // Massive repulsion
+            node.data('type') === 'Document' ? 5000000 : 800000,
+
+    nodeOverlap: 50,
+
+    // Very long edges to force communities apart
     idealEdgeLength: (edge) =>
-        edge.source().data('type') === 'Community' ? 400 : // Longer edges for meta-graph
-            edge.source().data('type') === 'Document' || edge.target().data('type') === 'Document' ? 200 : 100,
-    edgeElasticity: 100,
-    nestingFactor: 5,
-    gravity: 80,
-    numIter: 1000,
-    initialTemp: 200,
-    coolingFactor: 0.95,
+        edge.source().data('type') === 'Community' ? 800 :
+            edge.source().data('type') === 'Document' || edge.target().data('type') === 'Document' ? 300 : 150,
+
+    edgeElasticity: 30,          // Very loose edges (low number = rubber band stays long)
+    nestingFactor: 1.0,
+    gravity: 0.5,                // Almost zero gravity; free floating expansion
+    numIter: 2500,               // Run longer to achieve maximum spread
+    initialTemp: 800,            // High energy start
+    coolingFactor: 0.98,         // Cool down slowly
     minTemp: 1.0
 };
