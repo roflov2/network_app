@@ -224,30 +224,31 @@ export const LAYOUT_CONFIG = {
     name: 'cose',
     animate: true,
     animationDuration: 1000,
-    animationEasing: 'ease-out-cubic', // Smoother expansion, less wobble
+    animationEasing: 'ease-out-cubic',
     refresh: 20,
     fit: true,
-    padding: 100,                // Generous padding for the spread
-    randomize: false,
-    componentSpacing: 300,       // Keep disjoint parts far apart
+    padding: 60,
+    randomize: true,             // CRITICAL: Randomize start positions to prevent clumping at (0,0)
+    componentSpacing: 200,
 
-    // Physics Engine Tuning: MAXIMIZE SPREAD
+    // Balanced Physics for Separation
+    // Standard high repulsion is safer than massive numbers which can break the solver
     nodeRepulsion: (node) =>
-        node.data('type') === 'Community' ? 25000000 : // Massive repulsion
-            node.data('type') === 'Document' ? 5000000 : 800000,
+        node.data('type') === 'Community' ? 2000000 : // Strong repulsion
+            node.data('type') === 'Document' ? 1000000 : 400000,
 
-    nodeOverlap: 50,
+    nodeOverlap: 20,
 
-    // Very long edges to force communities apart
+    // Balanced edge length
     idealEdgeLength: (edge) =>
-        edge.source().data('type') === 'Community' ? 800 :
-            edge.source().data('type') === 'Document' || edge.target().data('type') === 'Document' ? 300 : 150,
+        edge.source().data('type') === 'Community' ? 400 : // Sufficient spacing
+            edge.source().data('type') === 'Document' || edge.target().data('type') === 'Document' ? 200 : 100,
 
-    edgeElasticity: 30,          // Very loose edges (low number = rubber band stays long)
-    nestingFactor: 1.0,
-    gravity: 0.5,                // Almost zero gravity; free floating expansion
-    numIter: 2500,               // Run longer to achieve maximum spread
-    initialTemp: 800,            // High energy start
-    coolingFactor: 0.98,         // Cool down slowly
+    edgeElasticity: 100,         // Standard elasticity for stability
+    nestingFactor: 5,
+    gravity: 0,                  // Zero gravity to allow full spread
+    numIter: 1000,
+    initialTemp: 200,
+    coolingFactor: 0.95,
     minTemp: 1.0
 };
