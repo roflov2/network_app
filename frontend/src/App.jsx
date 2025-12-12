@@ -495,6 +495,12 @@ export default function App() {
           </button>
         </div>
 
+        {mode === 'community' && selectedCommunity && (
+          <button className="btn-secondary" onClick={() => setSelectedCommunity(null)} style={{ marginRight: 'auto' }}>
+            ← Back to Communities
+          </button>
+        )}
+
         <SearchInput
           label="Start"
           value={startSearch}
