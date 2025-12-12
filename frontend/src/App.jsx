@@ -538,6 +538,7 @@ export default function App() {
             {isTableCollapsed ? '⊟' : '⊞'}
           </button>
           <NetworkGraph
+            key={`${mode}-${selectedCommunity || ''}`} // Force remount on mode/context switch
             elements={elements}
             stylesheet={stylesheet}
             onNodeClick={handleNodeClick}
