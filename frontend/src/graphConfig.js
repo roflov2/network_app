@@ -223,26 +223,27 @@ export const getStylesheet = (startNode, targetNode, selection, viewMode) => {
 export const LAYOUT_CONFIG = {
     name: 'cose',
     animate: true,
-    animationDuration: 1500,     // Slower animation for bounce
-    animationEasing: 'ease-out-elastic', // Bounce physics!
+    animationDuration: 2000,     // Slower, more deliberate animation
+    animationEasing: 'ease-out-elastic', // "Jiggly" bounce
     refresh: 20,
     fit: true,
-    padding: 30,
+    padding: 50,                 // More padding
     randomize: false,
-    componentSpacing: 120,
-    // Increased repulsion for better separation
+    componentSpacing: 200,       // Components far apart
+    // Massive repulsion to force spreading
     nodeRepulsion: (node) =>
-        node.data('type') === 'Community' ? 10000000 : // Massive repulsion for meta-bubbles
-            node.data('type') === 'Document' ? 2000000 : 400000,
-    nodeOverlap: 20,
+        node.data('type') === 'Community' ? 50000000 : // 50 Million repulsion for communities
+            node.data('type') === 'Document' ? 5000000 : 1000000,
+    nodeOverlap: 50,
+    // Long springs for communities
     idealEdgeLength: (edge) =>
-        edge.source().data('type') === 'Community' ? 400 : // Longer edges for meta-graph
-            edge.source().data('type') === 'Document' || edge.target().data('type') === 'Document' ? 200 : 100,
-    edgeElasticity: 100,
-    nestingFactor: 5,
-    gravity: 80,
-    numIter: 1000,
-    initialTemp: 200,
-    coolingFactor: 0.95,
+        edge.source().data('type') === 'Community' ? 1000 : // Very long edges
+            edge.source().data('type') === 'Document' || edge.target().data('type') === 'Document' ? 300 : 100,
+    edgeElasticity: 50,          // More elastic/stretchy (lower is looser)
+    nestingFactor: 0.1,          // Lower nesting factor to avoid tight clustering
+    gravity: 10,                 // Very low gravity to prevent clumping (was 80)
+    numIter: 2000,               // Run longer to find equilibrium
+    initialTemp: 500,            // Hotter start
+    coolingFactor: 0.90,
     minTemp: 1.0
 };
