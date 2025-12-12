@@ -130,7 +130,7 @@ const DataTable = memo(({ data, columns, selectedIdx, onSelect, onDownload, titl
 const NetworkGraph = memo(({ elements, stylesheet, onNodeClick }) => {
   const cyRef = useRef(null);
   const onNodeClickRef = useRef(onNodeClick);
-  const prevElementsLength = useRef(elements.length);
+  const prevElementsLength = useRef(-1); // Start at -1 to ensure layout runs on first mount
 
   const layoutRef = useRef(null); // Track active layout
 
