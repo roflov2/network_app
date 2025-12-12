@@ -139,18 +139,19 @@ export const getStylesheet = (startNode, targetNode, selection, viewMode) => {
                 selector: 'node[type="Community"]',
                 style: {
                     'shape': 'ellipse',
-                    'width': (ele) => Math.max(80, Math.min(200, (ele.data('size') || 10) * 2)), // Larger bubbles
-                    'height': (ele) => Math.max(80, Math.min(200, (ele.data('size') || 10) * 2)),
+                    'width': (ele) => Math.max(60, Math.min(180, (ele.data('size') || 10) * 1.8)),
+                    'height': (ele) => Math.max(60, Math.min(180, (ele.data('size') || 10) * 1.8)),
                     'background-color': (ele) => getCommunityColor(ele.data('community')),
-                    'font-size': 20,
+                    'font-size': 24,           // Lager font for importance
                     'font-weight': 'bold',
-                    'border-width': 6,
+                    'border-width': 2,         // Standard border
                     'border-color': '#fff',
-                    'text-valign': 'center',
+                    'text-valign': 'bottom',   // Consistent positioning (below)
                     'text-halign': 'center',
-                    'color': '#fff', // White text inside bubble
-                    'text-outline-width': 2,
-                    'text-outline-color': '#333'
+                    'text-margin-y': 8,
+                    'color': '#eaeaea',        // Consistent text color
+                    'text-outline-width': 3,
+                    'text-outline-color': '#1a1a2e' // Consistent background match
                 }
             }
         ];
