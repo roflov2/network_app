@@ -132,6 +132,8 @@ const NetworkGraph = memo(({ elements, stylesheet, onNodeClick }) => {
   const onNodeClickRef = useRef(onNodeClick);
   const prevElementsLength = useRef(elements.length);
 
+  const layoutRef = useRef(null); // Track active layout
+
   // Keep the callback ref updated
   useEffect(() => {
     onNodeClickRef.current = onNodeClick;
@@ -148,6 +150,12 @@ const NetworkGraph = memo(({ elements, stylesheet, onNodeClick }) => {
         if (cy.destroyed()) return; // Safety check
 
         try {
+          // Stop any previous running layout
+          if (layoutRef.current) {
+            layoutRef.current.stop();
+            layoutRef.current = null;
+          }
+
           // 1. PRE-LAYOUT: Arrange HUB (Document) nodes in a large circle to maximize distance
           const docNodes = cy.nodes('[type="Document"]');
           if (docNodes.length > 0) {
@@ -162,13 +170,21 @@ const NetworkGraph = memo(({ elements, stylesheet, onNodeClick }) => {
 
           // 2. MAIN PHYSICS LAYOUT: Run cose on everything
           // It will respect the initial positions of Documents because randomize is false in LAYOUT_CONFIG
-          cy.layout(LAYOUT_CONFIG).run();
+          const layout = cy.layout(LAYOUT_CONFIG);
+          layoutRef.current = layout; // Store ref
+          layout.run();
         } catch (e) {
           console.warn("Layout error:", e);
         }
       }, 50);
 
-      return () => clearTimeout(timerId); // Cleanup
+      return () => {
+        clearTimeout(timerId);
+        if (layoutRef.current) {
+          try { layoutRef.current.stop(); } catch (e) { /**/ }
+          layoutRef.current = null;
+        }
+      };
     }
   }, [elements]);
 
