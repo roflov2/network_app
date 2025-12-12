@@ -495,11 +495,7 @@ export default function App() {
           </button>
         </div>
 
-        {mode === 'community' && selectedCommunity && (
-          <button className="btn-secondary" onClick={() => setSelectedCommunity(null)} style={{ marginRight: 'auto' }}>
-            ← Back to Communities
-          </button>
-        )}
+
 
         <SearchInput
           label="Start"
@@ -517,9 +513,17 @@ export default function App() {
           />
         )}
 
-        <TypeChips types={ENTITY_TYPES} selected={allowedTypes} onToggle={toggleType} />
+        {/* Only show type filters if NOT in Meta-Graph view (Community mode without selection) */}
+        {!(mode === 'community' && !selectedCommunity) && (
+          <TypeChips types={ENTITY_TYPES} selected={allowedTypes} onToggle={toggleType} />
+        )}
 
         <div className="toolbar-actions">
+          {mode === 'community' && selectedCommunity && (
+            <button className="btn-secondary" onClick={() => setSelectedCommunity(null)}>
+              ← Back
+            </button>
+          )}
           <button className="btn-secondary" onClick={handleClear}>Clear</button>
         </div>
       </div>

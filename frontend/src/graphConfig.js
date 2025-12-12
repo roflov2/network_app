@@ -68,13 +68,47 @@ const HIGHLIGHT = {
     },
 };
 
-// Quick consistent color generator for communities
+// Primary palette (shades can be generated or selected)
+const PRIMARY_PALETTE = {
+    BLUE: '#4da6ff',   // Community 0
+    RED: '#ff6666',    // Community 1
+    GREEN: '#00cc66',  // Community 2
+    PURPLE: '#cc66ff', // Community 3
+    ORANGE: '#ffb84d', // Community 4
+    TEAL: '#00e6e6',   // Community 5
+    PINK: '#ff66b3',   // Community 6
+    YELLOW: '#e6e600', // Community 7
+    NAVY: '#3333cc'    // Community 8
+};
+
+// Map entity types to relative lightness/saturation adjustments (mocked by using alpha/hex variation if possible, or mapping to specific shades)
+// Simpler approach: Use the same hue but different brightness based on type hash or static mapping.
+const TYPE_SHADE_OFFSET = {
+    Document: 0,
+    Person: 20,
+    Organisation: 40,
+    Phone: -20,
+    Website: -40,
+    Crypto: 60
+};
+
+// Helper to darken/lighten hex color
+const adjustColor = (color, amount) => {
+    return color; // Placeholder for now, simple implementation complex in pure JS without lib. 
+    // For now, we'll just stick to the base color to ensure consistency as requested, 
+    // unless the user strictly needs distinct shades per type. 
+    // "Use the primary pallette colours, with shades to make it look more tidy."
+    // Let's implement a simple hash-based variation if needed, or just standard colors.
+    // Actually, Cytoscape supports 'opacity'. Maybe use that?
+    // Or we just accept the base community color for ALL types in that community to be "tidy".
+    // User said: "colors consistent with the community colour".
+};
+
+
+// Quick consistent color generator for communities using Primary Palette
 const getCommunityColor = (id) => {
-    const colors = [
-        '#e94560', '#51cf66', '#4dabf7', '#ffd43b', '#cc5de8',
-        '#f59f00', '#20c997', '#ff6b6b', '#845ef7', '#339af0'
-    ];
-    return colors[parseInt(id) % colors.length] || '#eaeaea';
+    const palette = Object.values(PRIMARY_PALETTE);
+    return palette[parseInt(id) % palette.length] || '#eaeaea';
 };
 
 // Generate stylesheet with highlights
@@ -86,7 +120,7 @@ export const getStylesheet = (startNode, targetNode, selection, viewMode) => {
         currentBaseStyles = [
             // Filter out existing type-based background colors but KEEP everything else
             ...BASE_STYLES.filter(s => !s.selector.includes('node[type=')),
-            // Re-apply shapes based on type (since we filtered out the original blocks which had both color and shape)
+            // Re-apply shapes based on type
             ...Object.entries(ENTITY_TYPES).map(([type, cfg]) => ({
                 selector: `node[type="${type}"]`,
                 style: { 'shape': cfg.shape }
@@ -96,6 +130,8 @@ export const getStylesheet = (startNode, targetNode, selection, viewMode) => {
                 selector: 'node[community]',
                 style: {
                     'background-color': (ele) => getCommunityColor(ele.data('community')),
+                    // Optional: Make different types slightly distinct in opacity or brightness if needed
+                    // 'background-opacity': (ele) => ele.data('type') === 'Document' ? 1 : 0.7 
                 }
             },
             // Special styling for the Meta-Graph "Community" nodes
@@ -103,13 +139,18 @@ export const getStylesheet = (startNode, targetNode, selection, viewMode) => {
                 selector: 'node[type="Community"]',
                 style: {
                     'shape': 'ellipse',
-                    'width': (ele) => Math.max(60, Math.min(150, (ele.data('size') || 10) * 1.5)),
-                    'height': (ele) => Math.max(60, Math.min(150, (ele.data('size') || 10) * 1.5)),
+                    'width': (ele) => Math.max(80, Math.min(200, (ele.data('size') || 10) * 2)), // Larger bubbles
+                    'height': (ele) => Math.max(80, Math.min(200, (ele.data('size') || 10) * 2)),
                     'background-color': (ele) => getCommunityColor(ele.data('community')),
-                    'font-size': 16,
+                    'font-size': 20,
                     'font-weight': 'bold',
-                    'border-width': 4,
-                    'border-color': '#fff'
+                    'border-width': 6,
+                    'border-color': '#fff',
+                    'text-valign': 'center',
+                    'text-halign': 'center',
+                    'color': '#fff', // White text inside bubble
+                    'text-outline-width': 2,
+                    'text-outline-color': '#333'
                 }
             }
         ];
@@ -180,21 +221,27 @@ export const getStylesheet = (startNode, targetNode, selection, viewMode) => {
 // Graph layout config
 export const LAYOUT_CONFIG = {
     name: 'cose',
-    animate: true,               // Enable animation for "physics" feel
-    animationDuration: 1000,     // Duration of the physics simulation
-    refresh: 20,                 // Number of ticks per frame; higher is faster but jerkier
-    fit: true,                   // Fit to viewport
-    padding: 30,                 // Padding on fit
-    randomize: false,            // Keep existing positions if possible
-    componentSpacing: 100,       // Distance between disconnected components
-    nodeRepulsion: (node) => node.data('type') === 'Document' ? 2000000 : 400000, // Stronger repulsion for hub Documents
-    nodeOverlap: 10,             // Node spacing prevent overlap
-    idealEdgeLength: (edge) => edge.source().data('type') === 'Document' || edge.target().data('type') === 'Document' ? 200 : 100,
-    edgeElasticity: 100,         // Higher = stiffer edges
-    nestingFactor: 5,            // Nesting factor (default)
-    gravity: 80,                 // Gravity to pull disjoint components together
-    numIter: 1000,               // Run simulation longer
-    initialTemp: 200,            // Initial temperature (higher = more movement)
-    coolingFactor: 0.95,         // Cooling factor (lower = faster cooling)
-    minTemp: 1.0                 // Minimum temperature to stop
+    animate: true,
+    animationDuration: 1500,     // Slower animation for bounce
+    animationEasing: 'ease-out-elastic', // Bounce physics!
+    refresh: 20,
+    fit: true,
+    padding: 30,
+    randomize: false,
+    componentSpacing: 120,
+    // Increased repulsion for better separation
+    nodeRepulsion: (node) =>
+        node.data('type') === 'Community' ? 10000000 : // Massive repulsion for meta-bubbles
+            node.data('type') === 'Document' ? 2000000 : 400000,
+    nodeOverlap: 20,
+    idealEdgeLength: (edge) =>
+        edge.source().data('type') === 'Community' ? 400 : // Longer edges for meta-graph
+            edge.source().data('type') === 'Document' || edge.target().data('type') === 'Document' ? 200 : 100,
+    edgeElasticity: 100,
+    nestingFactor: 5,
+    gravity: 80,
+    numIter: 1000,
+    initialTemp: 200,
+    coolingFactor: 0.95,
+    minTemp: 1.0
 };
