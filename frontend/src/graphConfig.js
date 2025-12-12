@@ -106,7 +106,7 @@ const adjustColor = (color, amount) => {
 
 
 // Quick consistent color generator for communities using Primary Palette
-const getCommunityColor = (id) => {
+export const getCommunityColor = (id) => {
     const palette = Object.values(PRIMARY_PALETTE);
     return palette[parseInt(id) % palette.length] || '#eaeaea';
 };

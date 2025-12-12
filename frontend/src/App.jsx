@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo, memo, useRef, useEffect } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { searchNodes, getNeighbors, getPaths, getCommunities, getCommunityGraph } from './api';
 import { useDebounce, exportToCsv } from './hooks';
-import { ENTITY_TYPES, getStylesheet, LAYOUT_CONFIG } from './graphConfig';
+import { ENTITY_TYPES, getStylesheet, LAYOUT_CONFIG, getCommunityColor } from './graphConfig';
 import Timeline from './Timeline';
 import './App.css';
 
@@ -70,13 +70,13 @@ const SearchInput = memo(({ label, value, onChange, onSelect, placeholder = "Sea
 // ─────────────────────────────────────────────────────────────────────────────
 // TYPE FILTER CHIPS
 // ─────────────────────────────────────────────────────────────────────────────
-const TypeChips = memo(({ types, selected, onToggle }) => (
+const TypeChips = memo(({ types, selected, onToggle, overrideColor }) => (
   <div className="type-chips">
     {Object.entries(types).map(([type, { color }]) => (
       <button
         key={type}
         className={`chip ${selected.includes(type) ? 'active' : ''}`}
-        style={{ '--chip-color': color }}
+        style={{ '--chip-color': overrideColor || color }}
         onClick={() => onToggle(type)}
       >
         {type}
@@ -497,12 +497,14 @@ export default function App() {
 
 
 
-        <SearchInput
-          label="Start"
-          value={startSearch}
-          onChange={setStartSearch}
-          onSelect={handleStartSelect}
-        />
+        {mode !== 'community' && (
+          <SearchInput
+            label="Start"
+            value={startSearch}
+            onChange={setStartSearch}
+            onSelect={handleStartSelect}
+          />
+        )}
 
         {isPathMode && (
           <SearchInput
@@ -515,7 +517,12 @@ export default function App() {
 
         {/* Only show type filters if NOT in Meta-Graph view (Community mode without selection) */}
         {!(mode === 'community' && !selectedCommunity) && (
-          <TypeChips types={ENTITY_TYPES} selected={allowedTypes} onToggle={toggleType} />
+          <TypeChips
+            types={ENTITY_TYPES}
+            selected={allowedTypes}
+            onToggle={toggleType}
+            overrideColor={selectedCommunity && mode === 'community' ? getCommunityColor(selectedCommunity) : null}
+          />
         )}
 
         <div className="toolbar-actions">
