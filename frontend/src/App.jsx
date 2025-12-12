@@ -142,24 +142,33 @@ const NetworkGraph = memo(({ elements, stylesheet, onNodeClick }) => {
     const cy = cyRef.current;
     if (cy && elements.length > 0 && elements.length !== prevElementsLength.current) {
       prevElementsLength.current = elements.length;
-      // Small delay to let new elements render, then run layout
-      setTimeout(() => {
-        // 1. PRE-LAYOUT: Arrange HUB (Document) nodes in a large circle to maximize distance
-        const docNodes = cy.nodes('[type="Document"]');
-        if (docNodes.length > 0) {
-          // Run a circle layout only on document nodes
-          docNodes.layout({
-            name: 'circle',
-            radius: 800, // Large initial radius to spread them out
-            fit: false,  // Don't fit yet
-            animate: false
-          }).run();
-        }
 
-        // 2. MAIN PHYSICS LAYOUT: Run cose on everything
-        // It will respect the initial positions of Documents because randomize is false in LAYOUT_CONFIG
-        cy.layout(LAYOUT_CONFIG).run();
+      // Small delay to let new elements render, then run layout
+      const timerId = setTimeout(() => {
+        if (cy.destroyed()) return; // Safety check
+
+        try {
+          // 1. PRE-LAYOUT: Arrange HUB (Document) nodes in a large circle to maximize distance
+          const docNodes = cy.nodes('[type="Document"]');
+          if (docNodes.length > 0) {
+            // Run a circle layout only on document nodes
+            docNodes.layout({
+              name: 'circle',
+              radius: 800, // Large initial radius to spread them out
+              fit: false,  // Don't fit yet
+              animate: false
+            }).run();
+          }
+
+          // 2. MAIN PHYSICS LAYOUT: Run cose on everything
+          // It will respect the initial positions of Documents because randomize is false in LAYOUT_CONFIG
+          cy.layout(LAYOUT_CONFIG).run();
+        } catch (e) {
+          console.warn("Layout error:", e);
+        }
       }, 50);
+
+      return () => clearTimeout(timerId); // Cleanup
     }
   }, [elements]);
 
