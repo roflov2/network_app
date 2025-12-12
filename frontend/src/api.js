@@ -54,7 +54,7 @@ export const getCommunities = async () => {
         return await response.json();
     } catch (error) {
         console.error('Communities error:', error);
-        return [];
+        return { elements: [], table_data: [] };
     }
 };
 
