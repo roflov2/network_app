@@ -88,7 +88,7 @@ const TypeChips = memo(({ types, selected, onToggle, overrideColor }) => (
 // ─────────────────────────────────────────────────────────────────────────────
 // DATA TABLE
 // ─────────────────────────────────────────────────────────────────────────────
-const DataTable = memo(({ data, columns, selectedIdx, onSelect, onDownload, title, onToggleCollapse, isCollapsed }) => (
+const DataTable = memo(({ data, columns, selectedIdx, onSelect, onDownload, title, isCollapsed }) => (
   <div className="table-panel">
     <div className="table-header">
       <h3>{title}</h3>
@@ -96,9 +96,7 @@ const DataTable = memo(({ data, columns, selectedIdx, onSelect, onDownload, titl
         <button className="btn-icon" onClick={onDownload} title="Download CSV">
           ↓
         </button>
-        <button className="btn-icon" onClick={onToggleCollapse} title={isCollapsed ? "Expand table" : "Collapse table"}>
-          {isCollapsed ? '›' : '‹'}
-        </button>
+
       </div>
     </div>
     {!isCollapsed && (
@@ -562,17 +560,11 @@ export default function App() {
           }}
           onDownload={() => exportToCsv(tableData, 'network_data.csv')}
           title={isPathMode && targetNode ? 'Paths' : 'Edges'}
-          onToggleCollapse={toggleTableCollapse}
+
           isCollapsed={isTableCollapsed}
         />
         <div className="graph-panel">
-          <button
-            className="btn-maximize"
-            onClick={toggleTableCollapse}
-            title={isTableCollapsed ? "Restore graph" : "Maximize graph"}
-          >
-            {isTableCollapsed ? '⊟' : '⊞'}
-          </button>
+
           <NetworkGraph
             key={`${mode}-${selectedCommunity || ''}`} // Force remount on mode/context switch
             elements={elements}
