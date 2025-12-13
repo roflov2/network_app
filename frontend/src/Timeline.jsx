@@ -19,14 +19,9 @@ const Timeline = ({ data, title }) => {
         <div className="timeline-container" style={{
             width: '100%',
             height: '180px',
-            backgroundColor: 'rgba(26, 26, 46, 0.95)',
-            borderTop: '1px solid #707070',
+            backgroundColor: 'var(--bg-card)',
+            borderTop: '1px solid var(--border)',
             padding: '10px 20px',
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            zIndex: 1000,
-            backdropFilter: 'blur(10px)',
             display: 'flex',
             flexDirection: 'column'
         }}>

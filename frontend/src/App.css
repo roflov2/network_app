@@ -42,7 +42,7 @@ body {
    ───────────────────────────────────────────────────────────────────────────── */
 .app {
   display: grid;
-  grid-template-rows: auto auto auto 1fr;
+  grid-template-rows: auto auto auto 1fr auto;
   height: 100vh;
 }
 
@@ -441,7 +441,7 @@ tr.selected {
   z-index: 1 !important;
 }
 
-.graph-canvas > div {
+.graph-canvas>div {
   z-index: 1 !important;
 }
 
