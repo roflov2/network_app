@@ -624,6 +624,10 @@ tr.selected {
     grid-template-rows: 1fr 1fr;
   }
 
+  .main.table-collapsed {
+    grid-template-rows: auto 1fr;
+  }
+
   .table-panel {
     border-right: none;
     border-bottom: 1px solid var(--border);

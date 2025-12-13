@@ -298,7 +298,7 @@ export default function App() {
   const [selectedCommunity, setSelectedCommunity] = useState(null);
 
   const [showWelcome, setShowWelcome] = useState(true);
-  const [isTableCollapsed, setIsTableCollapsed] = useState(false);
+  const [isTableCollapsed, setIsTableCollapsed] = useState(() => window.innerWidth < 768);
 
 
   // Computed
@@ -531,6 +531,9 @@ export default function App() {
               ← Back
             </button>
           )}
+          <button className="btn-secondary" onClick={toggleTableCollapse}>
+            {isTableCollapsed ? 'View Table' : 'Hide Table'}
+          </button>
           <button className="btn-secondary" onClick={handleClear}>Clear</button>
         </div>
       </div>
