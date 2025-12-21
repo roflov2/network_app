@@ -253,7 +253,7 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
             // However, inspecting node attributes here is expensive.
             // Strategy: Default edges to faint grey with low opacity.
             if (!hoveredNode && !focusedNode && !focusedEdge) {
-                res.color = "rgba(200, 200, 200, 0.4)"; // Faint faint grey (0.4 opacity)
+                res.color = "rgba(200, 200, 200, 0.6)"; // Increased from 0.4 to 0.6
             }
 
             if (hoveredNode && displayedGraph.hasNode(hoveredNode)) {
