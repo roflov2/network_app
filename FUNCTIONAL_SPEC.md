@@ -25,9 +25,9 @@ The system utilizes a **Client-First Intelligence** architecture. A lightweight 
 
 ### 2.1 Architecture Pattern
 **Frontend-Heavy Hybrid Architecture:**
--   **Backend (Stateless):** FastAPI (Python) - Serves static assets and performs ETL on uploaded CSVs.
--   **Frontend (Smart):** React 19 + Vite - Manages graph state, visualization, and algorithmic processing.
--   **Data Flow:** CSV $\to$ Backend ETL $\to$ JSON $\to$ Client Memory (Graphology).
+-   **Backend (Optional):** FastAPI (Python) - Handles CSV parsing. Not required for static demo.
+-   **Frontend (Smart):** React 19 + Vite - fully static capability for GitHub Pages.
+-   **Data Flow:** CSV $\to$ Backend ETL $\to$ JSON (or Static JSON) $\to$ Client Memory.
 
 ### 2.2 Core Design Principles
 1.  **Bipartite Graph Model:** Entities connect indirectly through document nodes.
@@ -53,7 +53,7 @@ The system utilizes a **Client-First Intelligence** architecture. A lightweight 
 | Framework | React 19 | UI component framework |
 | State/Graph | **Graphology** | Graph data structure & algorithms |
 | Rendering | **Sigma.js** | WebGL graph visualization |
-| Layout | **ForceAtlas2** | Continuous physics layout (Worker) - Auto stops after 2s for static view |
+| Layout | **ForceAtlas2** | **Hybrid Strategy:** Pre-calculated (100 iters) + Continuous (Worker) |
 | Clustering | **Louvain** | `graphology-communities-louvain` |
 | Search | **Fuse.js** | Fuzzy client-side search |
 | Charts | Recharts | Timeline visualization |
@@ -300,9 +300,10 @@ Nodes are colored using the **website brand palette** (from Bias and Brew) for v
     -   **Backend:** Parses CSV, identifies the ID column, explodes lists, constructs JSON graph.
     -   **Frontend:** Receives JSON, initializes Graphology instance.
 
-2.  **Test Data (Demo Mode):**
-    -   User clicks "Load Demo Data".
-    -   System loads a pre-configured dataset (`test_data.csv` from backend) to instantly demonstrate visualization capabilities without requiring user files.
+3.  **Test Data (Demo Mode):**
+    -   **Concept:** Instantly load a pre-configured dataset.
+    -   **Static/Prod:** Fetches `demo-data.json` directly from the server (no backend required).
+    -   **Local/Dev:** Fetches from Python backend via `/load-demo`.
 
 ---
 
@@ -426,7 +427,9 @@ App.jsx
 #### Layout Performance
 
 **ForceAtlas2 Optimizations:**
-- Web Workers: Layout runs in worker to prevent UI freezing
+- **Hybrid Layout Strategy:**
+  1.  **Pre-calculation:** Runs 100 iterations of ForceAtlas2 *before* initial render to "unfold" the graph.
+  2.  **Continuous:** Web Worker layout takes over for smooth stabilization.
 - Tuned settings for quick stabilization with minimal jitter:
   - `scalingRatio: 10` - Prevents node overlap
   - `gravity: 0.5` - Gentle pull to center
@@ -468,8 +471,10 @@ App.jsx
 
 ### 8.1 Strategy
 
-* **Backend:** Railway (Python/FastAPI). No database required.
-* **Frontend:** GitHub Pages or Vercel (Static React build).
+*   **Primary Deployment:** **GitHub Pages** (Static Frontend).
+    *   **CI/CD:** GitHub Actions automatically builds and deploys on push to `main`.
+*   **Backend (Optional):** Railway/Render (Python/FastAPI) if CSV upload is required.
+*   **Demo Mode:** The live GitHub Pages demo uses static JSON data, making the backend optional for viewers.
 
 ### 8.2 Security & Persistence
 
@@ -487,9 +492,8 @@ App.jsx
 const graph = new Graph();
 graph.import(data); // Import JSON from API
 
-// 1. Run Layout
-const positions = forceAtlas2(graph, { iterations: 100 });
-forceAtlas2.assign(graph);
+// 1. Run Layout (Pre-calculation)
+forceAtlas2.assign(graph, { iterations: 100 });
 
 // 2. Calculate Communities
 const communities = louvain(graph);
