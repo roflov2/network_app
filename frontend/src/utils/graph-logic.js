@@ -1,7 +1,7 @@
 import Graph from 'graphology';
 import louvain from 'graphology-communities-louvain';
 import Fuse from 'fuse.js';
-import { forceAtlas2 } from 'graphology-layout-forceatlas2';
+import forceAtlas2 from 'graphology-layout-forceatlas2';
 
 // Node type color mapping (Website brand palette)
 const NODE_TYPE_COLORS = {
@@ -121,29 +121,57 @@ export function filterByCommunity(graph, communityId) {
 }
 
 export function applyLayoutAndCommunities(graph) {
-    // 1. Initialize positions and size
-    graph.forEachNode((node, attr) => {
-        if (attr.x === undefined || attr.y === undefined) {
-            graph.setNodeAttribute(node, 'x', Math.random());
-            graph.setNodeAttribute(node, 'y', Math.random());
-            graph.setNodeAttribute(node, 'size', 25);
-        } else {
-            if (attr.size === undefined) graph.setNodeAttribute(node, 'size', 25);
-        }
-    });
+    // 1. Calculate Degree Centrality for Sizing (Visual Hierarchy)
+    // We want hubs to be big and leaves to be small
+    const degrees = {};
+    let maxDegree = 1;
 
-    // 2. Calculate Communities (keep for potential future use)
-    const communities = louvain(graph);
     graph.forEachNode((node) => {
-        const communityId = communities[node];
-        graph.setNodeAttribute(node, 'community', communityId);
+        const degree = graph.degree(node);
+        degrees[node] = degree;
+        if (degree > maxDegree) maxDegree = degree;
     });
 
-    // 3. Color nodes by TYPE (with dynamic color generation for unknown types)
+    // 2. Initialize Nodes (Size & Color)
     graph.forEachNode((node, attr) => {
+        // Logarithmic sizing: prevents massive nodes from covering everything
+        // Formula: Base size (3) + Log(degree) factor
+        const degree = degrees[node] || 0;
+        const size = 3 + (Math.log(degree + 1) * 4);
+
+        graph.setNodeAttribute(node, 'size', size);
+
+        // Random starting positions (helps the layout engine start)
+        if (attr.x === undefined || attr.y === undefined) {
+            graph.setNodeAttribute(node, 'x', Math.random() * 100);
+            graph.setNodeAttribute(node, 'y', Math.random() * 100);
+        }
+
+        // Color by Type
         const nodeType = attr.type || 'Unknown';
         const color = getColorForType(nodeType);
         graph.setNodeAttribute(node, 'color', color);
+    });
+
+    // 3. Run Community Detection (Louvain)
+    const communities = louvain(graph);
+    graph.forEachNode((node) => {
+        graph.setNodeAttribute(node, 'community', communities[node]);
+    });
+
+    // 4. RUN THE PHYSICS LAYOUT (The Missing Step!)
+    // We run ForceAtlas2 for a set number of iterations to organize the graph.
+    // 'barnesHutOptimize: true' is critical for performance on large graphs.
+    forceAtlas2.assign(graph, {
+        iterations: 100, // Run 100 frames of physics
+        settings: {
+            gravity: 1,             // Pulls disconnected parts back to center
+            scalingRatio: 10,       // Higher = more space between nodes
+            barnesHutOptimize: true,// Essential for performance > 500 nodes
+            barnesHutTheta: 0.5,
+            edgeWeightInfluence: 1, // Higher = heavy edges pull nodes closer
+            strongGravityMode: true // Helps create a tighter circular shape
+        }
     });
 
     return graph;

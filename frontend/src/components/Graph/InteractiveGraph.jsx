@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import GraphControls from "./GraphControls";
 import Sigma from "sigma";
 import { NodeCircleProgram, EdgeLineProgram, EdgeArrowProgram } from "sigma/rendering";
-import { forceAtlas2 } from "graphology-layout-forceatlas2";
+
 import FA2Layout from "graphology-layout-forceatlas2/worker";
 import Graph from 'graphology';
 import { get2HopNeighborhood } from "../../utils/graph-logic";
