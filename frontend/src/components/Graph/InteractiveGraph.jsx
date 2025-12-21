@@ -102,14 +102,34 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
 
         sigmaGraph.clear();
 
+        // Z-INDEX ORDERING: Add Documents first (bottom layer), then Entities (top layer)
+
+        // Pass 1: Documents
         displayedGraph.forEachNode((node, attr) => {
-            sigmaGraph.addNode(node, {
-                ...attr,
-                x: attr.x ?? Math.random(),
-                y: attr.y ?? Math.random(),
-                size: attr.size ?? 25,
-                type: 'circle'
-            });
+            if (attr.type === 'Document') {
+                sigmaGraph.addNode(node, {
+                    ...attr,
+                    x: attr.x ?? Math.random(),
+                    y: attr.y ?? Math.random(),
+                    size: attr.size ?? 12,
+                    zIndex: 0, // Bottom layer
+                    type: 'circle'
+                });
+            }
+        });
+
+        // Pass 2: Entities (everything else)
+        displayedGraph.forEachNode((node, attr) => {
+            if (attr.type !== 'Document') {
+                sigmaGraph.addNode(node, {
+                    ...attr,
+                    x: attr.x ?? Math.random(),
+                    y: attr.y ?? Math.random(),
+                    size: attr.size ?? 25,
+                    zIndex: 1, // Top layer
+                    type: 'circle'
+                });
+            }
         });
 
         displayedGraph.forEachEdge((edge, attr, source, target, sourceAttr, targetAttr) => {
@@ -171,27 +191,37 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
 
         sigmaRef.current.setSetting("nodeReducer", (node, data) => {
             const res = { ...data };
+
+            // Default Z-Index based on type (Documents=0, Entities=1)
+            // We set this during graph construction, but can enforce here if needed.
+            // Highlighted nodes get zIndex 10.
+
             if (hoveredNode && displayedGraph.hasNode(hoveredNode)) {
                 if (node === hoveredNode) {
                     res.highlighted = true;
+                    // Restore full opacity if it was faint
+                    if (res.color && res.color.length > 7) res.color = res.color.substring(0, 7);
+
                     res.size = (data.size || 5) * 1.5;
                     res.color = "#ff6b6b";
                     res.zIndex = 10;
                 } else if (displayedGraph.hasEdge(node, hoveredNode) || displayedGraph.hasEdge(hoveredNode, node)) {
                     res.color = "#ffa500";
                     res.size = (data.size || 5) * 1.2;
-                    res.zIndex = 5;
+                    res.zIndex = 5; // Neighbors above normal nodes
                     res.label = data.label;
                 } else {
                     res.color = "#e0e0e0";
                     res.label = "";
-                    res.zIndex = 0;
+                    res.zIndex = 0; // Background
                 }
             }
             if (focusedNode === node) {
                 res.highlighted = true;
+                if (res.color && res.color.length > 7) res.color = res.color.substring(0, 7);
                 res.size = (data.size || 5) * 1.3;
                 res.color = "#2c3e50";
+                res.zIndex = 10;
             }
             if (clickedNodes.has(node) && node !== focusedNode && node !== hoveredNode) {
                 res.color = "#27ae60";
@@ -199,6 +229,7 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
             if (focusedEdge && displayedGraph.hasEdge(focusedEdge)) {
                 if (displayedGraph.hasExtremity(focusedEdge, node)) {
                     res.highlighted = true;
+                    if (res.color && res.color.length > 7) res.color = res.color.substring(0, 7);
                     res.size = (data.size || 5) * 1.5;
                     res.zIndex = 10;
                 }
@@ -212,6 +243,17 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
             // Safety check: ensure edge exists in displayed graph
             if (!displayedGraph.hasEdge(edge)) {
                 return res;
+            }
+
+            // Visual Hierarchy: Faint edges for Documents
+            // If we are not hovering/focusing, make document edges faint
+            // We can detect document edges by checking source type logic or just defaulting all edges to faint 
+            // since this is a bipartite graph and most edges involve a document.
+            // A better check: is one extremity a Document?
+            // However, inspecting node attributes here is expensive.
+            // Strategy: Default edges to faint grey with low opacity.
+            if (!hoveredNode && !focusedNode && !focusedEdge) {
+                res.color = "rgba(200, 200, 200, 0.4)"; // Faint faint grey (0.4 opacity)
             }
 
             if (hoveredNode && displayedGraph.hasNode(hoveredNode)) {

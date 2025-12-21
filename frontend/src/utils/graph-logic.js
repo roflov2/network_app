@@ -137,7 +137,12 @@ export function applyLayoutAndCommunities(graph) {
         // Logarithmic sizing: prevents massive nodes from covering everything
         // Formula: Base size (3) + Log(degree) factor
         const degree = degrees[node] || 0;
-        const size = 3 + (Math.log(degree + 1) * 4);
+        let size = 3 + (Math.log(degree + 1) * 4);
+
+        // Visual Hierarchy: Reduce size of Document nodes
+        if (attr.type === 'Document') {
+            size *= 0.5; // Half size for structural nodes
+        }
 
         graph.setNodeAttribute(node, 'size', size);
 
@@ -149,7 +154,15 @@ export function applyLayoutAndCommunities(graph) {
 
         // Color by Type
         const nodeType = attr.type || 'Unknown';
-        const color = getColorForType(nodeType);
+        let color = getColorForType(nodeType);
+
+        // Visual Hierarchy: Faint Documents
+        if (nodeType === 'Document') {
+            // Apply 60% opacity to the base grey (#6B7280 -> #6B728099)
+            // User feedback: 30% (4D) was too faint.
+            color = color + '99';
+        }
+
         graph.setNodeAttribute(node, 'color', color);
     });
 
