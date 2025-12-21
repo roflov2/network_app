@@ -41,8 +41,10 @@ export default function App() {
     const handleDemoLoad = async () => {
         setLoading(true);
         try {
-            // Fetch from backend
-            const res = await fetch('/api/load-demo', { method: 'POST' });
+            // Fetch from backend or static file based on environment
+            const res = await (import.meta.env.PROD
+                ? fetch(import.meta.env.BASE_URL + 'demo-data.json')
+                : fetch('/api/load-demo', { method: 'POST' }));
             if (!res.ok) throw new Error("Failed to load demo data");
             const data = await res.json();
             const rawGraph = processGraphData(data.graph);
@@ -63,6 +65,13 @@ export default function App() {
 
     const handleUpload = async (file) => {
         setLoading(true);
+
+        if (import.meta.env.PROD) {
+            alert("File processing requires a Python backend and is not available in this GitHub Pages demo. Please use 'Load Demo Data' to explore the application features.");
+            setLoading(false);
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', file);
         try {
