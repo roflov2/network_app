@@ -4,7 +4,7 @@ import { Calendar, ChevronUp, ChevronDown } from 'lucide-react';
 
 export default function Timeline({ graph, sidebarOpen, sidebarWidth }) {
     const [granularity, setGranularity] = useState('year'); // 'year' | 'month'
-    const [isExpanded, setIsExpanded] = useState(true);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     // Generate/Extract Dates
     // Since our demo data has no dates, we mock them deterministically based on node ID
@@ -101,41 +101,58 @@ export default function Timeline({ graph, sidebarOpen, sidebarWidth }) {
     return (
         <div
             style={{ left: sidebarOpen ? sidebarWidth : 0 }}
-            className={`absolute bottom-0 right-0 z-20 bg-white/95 dark:bg-zinc-900/95 border-t border-zinc-200 dark:border-zinc-700 transition-all duration-300 ease-in-out ${isExpanded ? 'h-64' : 'h-12'}`}
+            className={`absolute bottom-0 right-0 z-20 bg-white/95 dark:bg-zinc-900/95 border-t border-zinc-200 dark:border-zinc-700 transition-all duration-300 ease-in-out ${isExpanded ? 'h-64' : 'h-8'}`}
         >
+            {isExpanded ? (
+                <>
+                    {/* Expanded Header */}
+                    <div className="flex items-center justify-between px-4 h-12 bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+                                <Calendar size={16} />
+                                <span>Temporal Distribution</span>
+                            </div>
 
-            {/* Header / Toggle */}
-            <div className="flex items-center justify-between px-4 h-12 bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-200">
-                        <Calendar size={16} />
+                            {/* Granularity Switcher */}
+                            <div className="flex bg-zinc-200 dark:bg-zinc-700 rounded-md p-1">
+                                <button
+                                    onClick={() => setGranularity('year')}
+                                    className={`px-3 py-1 text-xs font-medium rounded ${granularity === 'year' ? 'bg-white dark:bg-zinc-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
+                                >
+                                    Year (Annual)
+                                </button>
+                                <button
+                                    onClick={() => setGranularity('month')}
+                                    className={`px-3 py-1 text-xs font-medium rounded ${granularity === 'month' ? 'bg-white dark:bg-zinc-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
+                                >
+                                    Month (Detailed)
+                                </button>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => setIsExpanded(false)}
+                            className="p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded transition-colors"
+                            title="Collapse"
+                        >
+                            <ChevronDown size={20} />
+                        </button>
+                    </div>
+                </>
+            ) : (
+                /* Collapsed Handle */
+                <button
+                    onClick={() => setIsExpanded(true)}
+                    className="w-full h-full flex items-center justify-between px-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                    title="Expand Temporal Distribution"
+                >
+                    <div className="flex items-center gap-2 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                        <Calendar size={14} />
                         <span>Temporal Distribution</span>
                     </div>
-
-                    {/* Granularity Switcher */}
-                    <div className="flex bg-zinc-200 dark:bg-zinc-700 rounded-md p-1">
-                        <button
-                            onClick={() => setGranularity('year')}
-                            className={`px-3 py-1 text-xs font-medium rounded ${granularity === 'year' ? 'bg-white dark:bg-zinc-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
-                        >
-                            Year (Annual)
-                        </button>
-                        <button
-                            onClick={() => setGranularity('month')}
-                            className={`px-3 py-1 text-xs font-medium rounded ${granularity === 'month' ? 'bg-white dark:bg-zinc-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
-                        >
-                            Month (Detailed)
-                        </button>
-                    </div>
-                </div>
-
-                <button
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded transition-colors"
-                >
-                    {isExpanded ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
+                    <ChevronUp size={16} className="text-zinc-400" />
                 </button>
-            </div>
+            )}
 
             {/* Chart Area */}
             {isExpanded && (
