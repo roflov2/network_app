@@ -110,7 +110,7 @@ export function greyOutNonCommunityNodes(graph, communityId) {
             modified.setNodeAttribute(node, 'color', '#999999');
             modified.setNodeAttribute(node, 'originalColor', attributes.color); // Store original
             modified.setNodeAttribute(node, 'zIndex', -10); // Very low z-index for greyed nodes
-            modified.setNodeAttribute(node, 'opacity', 0.75); // 75% opaque (50% more than 0.5)
+            modified.setNodeAttribute(node, 'opacity', 0.9); // 90% opaque
         } else {
             // Selected community nodes above greyed but below contour
             modified.setNodeAttribute(node, 'zIndex', -5);
