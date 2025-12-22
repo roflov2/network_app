@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Filter, Eye, EyeOff, ChevronDown, ChevronRight } from 'lucide-react';
 import { getColorForType } from '../../utils/graph-logic';
 
-export default function TypeFilters({ availableTypes, selectedTypes, onToggleType, onSelectAll, onDeselectAll }) {
+export default function TypeFilters({ availableTypes, selectedTypes, onToggleType, onSelectAll, onDeselectAll, overrideColor }) {
     const [isExpanded, setIsExpanded] = useState(false);
 
     if (!availableTypes || availableTypes.length === 0) return null;
@@ -37,7 +37,7 @@ export default function TypeFilters({ availableTypes, selectedTypes, onToggleTyp
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                     {availableTypes.map(type => {
                         const isSelected = selectedTypes.has(type);
-                        const color = getColorForType(type);
+                        const color = overrideColor || getColorForType(type);
 
                         return (
                             <label

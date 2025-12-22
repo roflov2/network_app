@@ -322,6 +322,7 @@ export default function App() {
                                 onDeselectAll={() => {
                                     setSelectedTypes(new Set());
                                 }}
+                                overrideColor={selectedCommunity !== null && communityStats[selectedCommunity]?.color}
                             />
 
 
