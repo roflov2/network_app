@@ -28,12 +28,7 @@ export default function TypeFilters({ availableTypes, selectedTypes, onToggleTyp
                         >
                             All
                         </button>
-                        <button
-                            onClick={onDeselectAll}
-                            className="text-xs px-2 py-1 text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded transition-colors"
-                        >
-                            None
-                        </button>
+
                     </div>
                 )}
             </div>
