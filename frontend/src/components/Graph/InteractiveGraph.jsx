@@ -199,46 +199,52 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
                 res.color = data.color + Math.round(data.opacity * 255).toString(16).padStart(2, '0');
             }
 
+            // Check if this node is greyed out (not in selected community)
+            const isGreyedOut = data.opacity !== undefined && data.opacity < 1;
+
             // Default Z-Index based on type (Documents=0, Entities=1)
             // We set this during graph construction, but can enforce here if needed.
             // Highlighted nodes get zIndex 10.
 
-            if (hoveredNode && displayedGraph.hasNode(hoveredNode)) {
-                if (node === hoveredNode) {
-                    res.highlighted = true;
-                    // Restore full opacity if it was faint
-                    if (res.color && res.color.length > 7) res.color = res.color.substring(0, 7);
+            // Skip hover/focus overrides for greyed-out nodes in community mode
+            if (!isGreyedOut) {
+                if (hoveredNode && displayedGraph.hasNode(hoveredNode)) {
+                    if (node === hoveredNode) {
+                        res.highlighted = true;
+                        // Restore full opacity if it was faint
+                        if (res.color && res.color.length > 7) res.color = res.color.substring(0, 7);
 
-                    res.size = (data.size || 5) * 1.5;
-                    res.color = "#ff6b6b";
-                    res.zIndex = 10;
-                } else if (displayedGraph.hasEdge(node, hoveredNode) || displayedGraph.hasEdge(hoveredNode, node)) {
-                    res.color = "#ffa500";
-                    res.size = (data.size || 5) * 1.2;
-                    res.zIndex = 5; // Neighbors above normal nodes
-                    res.label = data.label;
-                } else {
-                    res.color = "#e0e0e0";
-                    res.label = "";
-                    res.zIndex = 0; // Background
+                        res.size = (data.size || 5) * 1.5;
+                        res.color = "#ff6b6b";
+                        res.zIndex = 10;
+                    } else if (displayedGraph.hasEdge(node, hoveredNode) || displayedGraph.hasEdge(hoveredNode, node)) {
+                        res.color = "#ffa500";
+                        res.size = (data.size || 5) * 1.2;
+                        res.zIndex = 5; // Neighbors above normal nodes
+                        res.label = data.label;
+                    } else {
+                        res.color = "#e0e0e0";
+                        res.label = "";
+                        res.zIndex = 0; // Background
+                    }
                 }
-            }
-            if (focusedNode === node) {
-                res.highlighted = true;
-                if (res.color && res.color.length > 7) res.color = res.color.substring(0, 7);
-                res.size = (data.size || 5) * 1.3;
-                res.color = "#2c3e50";
-                res.zIndex = 10;
-            }
-            if (clickedNodes.has(node) && node !== focusedNode && node !== hoveredNode) {
-                res.color = "#27ae60";
-            }
-            if (focusedEdge && displayedGraph.hasEdge(focusedEdge)) {
-                if (displayedGraph.hasExtremity(focusedEdge, node)) {
+                if (focusedNode === node) {
                     res.highlighted = true;
                     if (res.color && res.color.length > 7) res.color = res.color.substring(0, 7);
-                    res.size = (data.size || 5) * 1.5;
+                    res.size = (data.size || 5) * 1.3;
+                    res.color = "#2c3e50";
                     res.zIndex = 10;
+                }
+                if (clickedNodes.has(node) && node !== focusedNode && node !== hoveredNode) {
+                    res.color = "#27ae60";
+                }
+                if (focusedEdge && displayedGraph.hasEdge(focusedEdge)) {
+                    if (displayedGraph.hasExtremity(focusedEdge, node)) {
+                        res.highlighted = true;
+                        if (res.color && res.color.length > 7) res.color = res.color.substring(0, 7);
+                        res.size = (data.size || 5) * 1.5;
+                        res.zIndex = 10;
+                    }
                 }
             }
             return res;
