@@ -241,23 +241,26 @@ export default function App() {
 
 
                                     {/* Document Collapse Toggle (Moved here) */}
-                                    <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                                        <button
-                                            onClick={() => setIsDocumentsCollapsed(!isDocumentsCollapsed)}
-                                            className={`w-full py-2 px-3 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 ${isDocumentsCollapsed
-                                                ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700'
-                                                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
-                                                }`}
-                                        >
-                                            {isDocumentsCollapsed ? <FilePlus size={16} /> : <FileMinus size={16} />}
-                                            {isDocumentsCollapsed ? "Show Documents" : "Collapse Documents"}
-                                        </button>
-                                        {!isDocumentsCollapsed && (
-                                            <div className="text-xs text-center text-zinc-500 mt-2">
-                                                Hide documents to simplify graph
-                                            </div>
-                                        )}
-                                    </div>
+                                    {/* Document Collapse Toggle (Hidden in Path Mode) */}
+                                    {!pathGraph && (
+                                        <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                                            <button
+                                                onClick={() => setIsDocumentsCollapsed(!isDocumentsCollapsed)}
+                                                className={`w-full py-2 px-3 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 ${isDocumentsCollapsed
+                                                        ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700'
+                                                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
+                                                    }`}
+                                            >
+                                                {isDocumentsCollapsed ? <FilePlus size={16} /> : <FileMinus size={16} />}
+                                                {isDocumentsCollapsed ? "Show Documents" : "Collapse Documents"}
+                                            </button>
+                                            {!isDocumentsCollapsed && (
+                                                <div className="text-xs text-center text-zinc-500 mt-2">
+                                                    Hide documents to simplify graph
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="text-zinc-400 text-sm italic text-center mt-10">
