@@ -109,6 +109,24 @@ export function greyOutNonCommunityNodes(graph, communityId) {
             // Grey out nodes not in selected community
             modified.setNodeAttribute(node, 'color', '#999999');
             modified.setNodeAttribute(node, 'originalColor', attributes.color); // Store original
+            modified.setNodeAttribute(node, 'zIndex', 0); // Low z-index for greyed nodes
+        } else {
+            // Selected community nodes on top
+            modified.setNodeAttribute(node, 'zIndex', 10);
+        }
+    });
+
+    // Grey out edges that don't belong to the selected community
+    modified.forEachEdge((edge, attributes, source, target) => {
+        const sourceInCommunity = modified.getNodeAttribute(source, 'community') === parseInt(communityId);
+        const targetInCommunity = modified.getNodeAttribute(target, 'community') === parseInt(communityId);
+
+        if (!sourceInCommunity || !targetInCommunity) {
+            // Hide edges that connect to nodes outside the community
+            modified.setEdgeAttribute(edge, 'hidden', true);
+        } else {
+            // Ensure edges within community are visible
+            modified.setEdgeAttribute(edge, 'hidden', false);
         }
     });
 
