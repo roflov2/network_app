@@ -197,9 +197,20 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
             // Check if this node is greyed out (smaller size = greyed)
             const isGreyedOut = data.size && data.size < 5;
 
+            // Hide labels for greyed-out nodes by default
+            if (isGreyedOut) {
+                res.label = "";
+            }
+
             // Default Z-Index based on type (Documents=0, Entities=1)
             // We set this during graph construction, but can enforce here if needed.
             // Highlighted nodes get zIndex 10.
+
+            // Allow hover to reveal label even for greyed nodes
+            if (isGreyedOut && hoveredNode === node) {
+                res.label = data.label; // Show label on hover
+                res.size = (data.size || 5) * 1.3; // Slight size increase
+            }
 
             // Skip hover/focus overrides for greyed-out nodes in community mode
             if (!isGreyedOut) {
