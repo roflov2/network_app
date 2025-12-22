@@ -26,7 +26,7 @@ export default function HelpModal({ onClose }) {
                 {/* Content */}
                 <div className="p-6 space-y-6">
                     <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                        Welcome to the Network Explorer. This interactive tool helps you visualize and analyze complex relationships between entities.
+                        Welcome to the Network Explorer. This interactive tool helps you visualise and analyse complex relationships between entities.
                     </p>
 
                     <div className="space-y-4">
@@ -78,7 +78,7 @@ export default function HelpModal({ onClose }) {
                                 <div>
                                     <h4 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Communities</h4>
                                     <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                                        Toggle community detection to identify and visualize distinct clusters within the network.
+                                        Toggle community detection to identify and visualise distinct clusters within the network.
                                     </p>
                                 </div>
                             </div>
