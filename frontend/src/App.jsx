@@ -15,6 +15,7 @@ import "@react-sigma/core/lib/react-sigma.min.css";
 import DataTable from './components/UI/DataTable';
 import PathTable from './components/UI/PathTable';
 import CommunityPanel from './components/UI/CommunityPanel';
+import FloatingControls from './components/UI/FloatingControls';
 
 export default function App() {
     const [graph, setGraph] = useState(null);
@@ -185,11 +186,14 @@ export default function App() {
 
 
     return (
-        <div className="flex h-screen w-full bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 overflow-hidden">
+        <div className="relative h-screen w-full bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 overflow-hidden">
             {/* Sidebar */}
             <aside
-                style={{ width: sidebarOpen ? sidebarWidth : 0 }}
-                className={`flex-shrink-0 bg-white dark:bg-zinc-800 border-r border-zinc-200 dark:border-zinc-700 ${isResizing ? '' : 'transition-all duration-300'} overflow-hidden relative group`}
+                style={{
+                    width: sidebarWidth,
+                    transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)'
+                }}
+                className={`absolute top-0 left-0 h-full z-40 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md border-r border-zinc-200 dark:border-zinc-700 shadow-2xl transition-transform duration-300 overflow-hidden group`}
             >
                 <div className="h-full flex flex-col overflow-hidden">
                     {/* Top Section: Controls + Stats (Flex 1) */}
@@ -202,44 +206,7 @@ export default function App() {
                                 </button>
                             </div>
 
-                            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
-                                <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Controls</h3>
-                                <div className="flex flex-col gap-2">
-                                    <button
-                                        onClick={() => setIsUploadOpen(true)}
-                                        className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-zinc-700 rounded shadow-sm hover:bg-zinc-50 dark:hover:bg-zinc-600 transition-colors text-sm font-medium"
-                                    >
-                                        <Upload size={16} /> Upload Data
-                                    </button>
-                                    <button
-                                        onClick={handleDemoLoad}
-                                        className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded shadow-sm hover:bg-blue-700 transition-colors text-sm font-medium"
-                                    >
-                                        <Play size={16} /> Load Demo Data
-                                    </button>
-                                    <button
-                                        onClick={() => setIsPathOpen(true)}
-                                        disabled={!graph}
-                                        className={`flex items-center gap-2 px-3 py-2 bg-indigo-600 text-white rounded shadow-sm hover:bg-indigo-700 transition-colors text-sm font-medium ${!graph ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                    >
-                                        <Navigation size={16} /> Find Path
-                                    </button>
-                                    {pathGraph && (
-                                        <button
-                                            onClick={() => {
-                                                setPathGraph(null);
-                                                setAllPaths(null);
-                                                setSelectedPathIndex(0);
-                                                setFocusedNode(null);
-                                                setFocusedEdge(null);
-                                            }}
-                                            className="flex items-center gap-2 px-3 py-2 bg-zinc-600 text-white rounded shadow-sm hover:bg-zinc-700 transition-colors text-sm font-medium"
-                                        >
-                                            <X size={16} /> Clear Path
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
+                            {/* Controls removed - moved to floating FABs */}
 
                             {/* Stats */}
                             {graph ? (
@@ -423,13 +390,13 @@ export default function App() {
                 />
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 flex flex-col h-full relative">
-                {/* Mobile Toggle */}
+            {/* Main Content (Fullscreen Graph) */}
+            <main className="absolute inset-0 h-full w-full flex flex-col">
+                {/* Mobile Toggle (Hamburger) - Positioned to ensure visibility over graph but under sidebar when open */}
                 {!sidebarOpen && (
                     <button
                         onClick={() => setSidebarOpen(true)}
-                        className="absolute top-4 left-4 z-10 p-2 bg-white dark:bg-zinc-800 rounded-md shadow-md"
+                        className="absolute top-4 left-4 z-50 p-2 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm rounded-md shadow-md hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
                     >
                         <Menu size={20} />
                     </button>
@@ -501,6 +468,22 @@ export default function App() {
                     }}
                 />
             )}
+
+            <FloatingControls
+                onUpload={() => setIsUploadOpen(true)}
+                onLoadDemo={handleDemoLoad}
+                onFindPath={() => setIsPathOpen(true)}
+                onClearPath={() => {
+                    setPathGraph(null);
+                    setAllPaths(null);
+                    setSelectedPathIndex(0);
+                    setFocusedNode(null);
+                    setFocusedEdge(null);
+                }}
+                onOpenSettings={() => setSidebarOpen(true)}
+                hasPath={!!pathGraph}
+                isDemoAvailable={true} // Logic inside handles dev/prod, but consistent availability is fine
+            />
 
             <UploadModal
                 isOpen={isUploadOpen}

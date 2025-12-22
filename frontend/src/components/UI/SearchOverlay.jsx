@@ -65,7 +65,7 @@ export function SearchUI({ onSelectNode, graph }) {
     };
 
     return (
-        <div className="absolute top-4 right-4 z-20 w-64">
+        <div className="absolute top-4 left-16 z-30 w-80">
             <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Search size={16} className="text-zinc-400" />
