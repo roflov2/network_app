@@ -11,7 +11,7 @@ const NODE_TYPE_COLORS = {
     'Organisation': '#483C32',   // Taupe (organizations)
     'Organization': '#483C32',   // Taupe (alternate spelling)
     'Email': '#E0115F',          // Ruby (digital contact)
-    'Website': '#0F52BA',        // Sapphire (web entities)
+    'Website': '#8B5CF6',        // Purple (web entities)
     'Cryptocurrency': '#F28500', // Tangerine (financial)
     'Wallet': '#F28500',         // Tangerine (financial)
 };
