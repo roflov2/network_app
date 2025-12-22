@@ -2,15 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import GraphControls from "./GraphControls";
 import Sigma from "sigma";
 import { NodeCircleProgram, EdgeLineProgram, EdgeArrowProgram } from "sigma/rendering";
+import { bindWebGLLayer, createContoursProgram } from "@sigma/layer-webgl";
 
 import FA2Layout from "graphology-layout-forceatlas2/worker";
 import Graph from 'graphology';
 import { get2HopNeighborhood } from "../../utils/graph-logic";
 
-export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, onNodeClick, onEdgeClick }) {
+export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, onNodeClick, onEdgeClick, selectedCommunity, communityStats }) {
     const containerRef = useRef(null);
     const sigmaRef = useRef(null);
     const layoutRef = useRef(null);
+    const contourCleanupRef = useRef(null); // Track contour layer cleanup
     const [hoveredNode, setHoveredNode] = useState(null);
     const [displayedGraph, setDisplayedGraph] = useState(null);
     const [clickedNodes, setClickedNodes] = useState(new Set());
@@ -296,6 +298,64 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
         if (!document.fullscreenElement) containerRef.current.parentElement.requestFullscreen();
         else document.exitFullscreen();
     };
+
+    // Community Contour Effect
+    useEffect(() => {
+        if (!sigmaRef.current || !displayedGraph || selectedCommunity === null || selectedCommunity === undefined) {
+            // Clean up existing contour if any
+            if (contourCleanupRef.current) {
+                contourCleanupRef.current();
+                contourCleanupRef.current = null;
+            }
+            return;
+        }
+
+        // Get nodes in selected community
+        const communityNodes = [];
+        displayedGraph.forEachNode((node, attributes) => {
+            if (attributes.community === parseInt(selectedCommunity)) {
+                communityNodes.push(node);
+            }
+        });
+
+        if (communityNodes.length === 0) return;
+
+        // Get community color
+        const communityColor = communityStats[selectedCommunity]?.color || '#3B82F6';
+
+        // Create contour layer
+        try {
+            contourCleanupRef.current = bindWebGLLayer(
+                `community-${selectedCommunity}`,
+                sigmaRef.current,
+                createContoursProgram(
+                    communityNodes,
+                    {
+                        radius: 150,
+                        border: {
+                            color: communityColor,
+                            thickness: 8,
+                        },
+                        levels: [
+                            {
+                                color: "#00000000", // Transparent fill
+                                threshold: 0.5,
+                            },
+                        ],
+                    },
+                ),
+            );
+        } catch (error) {
+            console.error("Error creating contour layer:", error);
+        }
+
+        return () => {
+            if (contourCleanupRef.current) {
+                contourCleanupRef.current();
+                contourCleanupRef.current = null;
+            }
+        };
+    }, [selectedCommunity, displayedGraph, communityStats]);
 
     useEffect(() => {
         const onFsChange = () => setIsFullscreen(!!document.fullscreenElement);

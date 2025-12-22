@@ -97,27 +97,22 @@ export function detectCommunities(graph) {
     return { graph: communityGraph, stats: communityStats };
 }
 
-// Filter graph to show only nodes from a specific community
-export function filterByCommunity(graph, communityId) {
+// Grey out nodes not in the selected community (visual highlight instead of filter)
+export function greyOutNonCommunityNodes(graph, communityId) {
     if (!graph || communityId === null || communityId === undefined) return graph;
 
-    const filtered = new Graph();
+    const modified = graph.copy();
 
-    // Add nodes that belong to the selected community
-    graph.forEachNode((node, attributes) => {
-        if (attributes.community === parseInt(communityId)) {
-            filtered.addNode(node, attributes);
+    // Store original colors and grey out non-community nodes
+    modified.forEachNode((node, attributes) => {
+        if (attributes.community !== parseInt(communityId)) {
+            // Grey out nodes not in selected community
+            modified.setNodeAttribute(node, 'color', '#999999');
+            modified.setNodeAttribute(node, 'originalColor', attributes.color); // Store original
         }
     });
 
-    // Add edges between community nodes
-    graph.forEachEdge((edge, attributes, source, target) => {
-        if (filtered.hasNode(source) && filtered.hasNode(target)) {
-            filtered.addEdgeWithKey(edge, source, target, attributes);
-        }
-    });
-
-    return filtered;
+    return modified;
 }
 
 export function applyLayoutAndCommunities(graph) {

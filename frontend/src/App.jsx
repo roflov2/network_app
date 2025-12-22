@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import InteractiveGraph from './components/Graph/InteractiveGraph';
 import UploadModal from './components/UI/UploadModal';
 import { Upload, Play, Menu, X, Search, Navigation, FileMinus, FilePlus } from 'lucide-react';
-import { processGraphData, applyLayoutAndCommunities, findShortestPath, getPathSubgraph, filterGraphByTypes, getNodeTypes, collapseDocuments, get2HopNeighborhood, detectCommunities, filterByCommunity } from './utils/graph-logic';
+import { processGraphData, applyLayoutAndCommunities, findShortestPath, getPathSubgraph, filterGraphByTypes, getNodeTypes, collapseDocuments, get2HopNeighborhood, detectCommunities, greyOutNonCommunityNodes } from './utils/graph-logic';
 import { SearchUI } from './components/UI/SearchOverlay';
 import PathModal from './components/UI/PathModal';
 import TypeFilters from './components/UI/TypeFilters';
@@ -168,7 +168,7 @@ export default function App() {
 
         // Apply community isolation if a community is selected
         if (selectedCommunity !== null && showCommunities) {
-            displayGraph = filterByCommunity(displayGraph, selectedCommunity);
+            displayGraph = greyOutNonCommunityNodes(displayGraph, selectedCommunity);
         }
 
         return displayGraph;
@@ -443,6 +443,8 @@ export default function App() {
                                         key={graph.order} // Stable key to prevent re-mounting on resize
                                         focusedNode={focusedNode}
                                         focusedEdge={focusedEdge}
+                                        selectedCommunity={selectedCommunity}
+                                        communityStats={communityStats}
                                         onNodeClick={(node) => {
                                             setFocusedNode(node);
                                             setFocusedEdge(null);
