@@ -493,7 +493,14 @@ export default function App() {
                 }}
                 onOpenSettings={() => setSidebarOpen(!sidebarOpen)}
                 onOpenHelp={() => setIsHelpOpen(true)}
-                onToggleCommunities={() => setShowCommunities(!showCommunities)}
+                onToggleCommunities={() => {
+                    const newShowCommunities = !showCommunities;
+                    setShowCommunities(newShowCommunities);
+                    // Clear community selection when hiding communities
+                    if (!newShowCommunities) {
+                        setSelectedCommunity(null);
+                    }
+                }}
                 showCommunities={showCommunities}
                 hasPath={!!pathGraph}
             />
