@@ -1,11 +1,12 @@
 import React from 'react';
-import { Upload, Navigation, HelpCircle, X, FolderOpen, Users } from 'lucide-react';
+import { Upload, Navigation, HelpCircle, Menu, X, FolderOpen, Users } from 'lucide-react';
 
 export default function FloatingControls({
     onUpload,
     onFindPath,
     onClearPath,
     onOpenSettings,
+    onOpenHelp,
     onToggleCommunities,
     showCommunities,
     hasPath
@@ -55,11 +56,19 @@ export default function FloatingControls({
                 </button>
             )}
 
-            {/* Help / Sidebar Trigger */}
-            <button onClick={onOpenSettings} className={btnClass} title="Help / Info">
+            {/* Help Button */}
+            <button onClick={onOpenHelp} className={btnClass} title="Help / Info">
                 <HelpCircle size={20} />
                 <span className="absolute right-full mr-2 px-2 py-1 bg-zinc-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                     Help / Info
+                </span>
+            </button>
+
+            {/* Sidebar Toggle */}
+            <button onClick={onOpenSettings} className={btnClass} title="Show Controls">
+                <Menu size={20} />
+                <span className="absolute right-full mr-2 px-2 py-1 bg-zinc-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Show Controls
                 </span>
             </button>
         </div>

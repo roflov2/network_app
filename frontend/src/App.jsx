@@ -16,6 +16,7 @@ import DataTable from './components/UI/DataTable';
 import PathTable from './components/UI/PathTable';
 import CommunityPanel from './components/UI/CommunityPanel';
 import FloatingControls from './components/UI/FloatingControls';
+import HelpModal from './components/UI/HelpModal';
 
 export default function App() {
     const [graph, setGraph] = useState(null);
@@ -38,6 +39,7 @@ export default function App() {
     const [selectedCommunity, setSelectedCommunity] = useState(null); // Selected community for isolation
     const [communityStats, setCommunityStats] = useState({}); // Community statistics
     const [viewAllData, setViewAllData] = useState(false); // Toggle to show all data vs filtered
+    const [isHelpOpen, setIsHelpOpen] = useState(false);
 
     const handleDemoLoad = async () => {
         setLoading(true);
@@ -218,28 +220,7 @@ export default function App() {
 
 
 
-                            {/* Help Blurb */}
-                            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-md border border-blue-100 dark:border-blue-800 text-sm shadow-sm">
-                                <h2 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">How to use</h2>
-                                <ul className="space-y-2 text-blue-800 dark:text-blue-200 text-xs leading-relaxed">
-                                    <li className="flex gap-2">
-                                        <span className="font-bold">•</span>
-                                        <span><strong>Drag</strong> nodes to rearrange the layout.</span>
-                                    </li>
-                                    <li className="flex gap-2">
-                                        <span className="font-bold">•</span>
-                                        <span><strong>Click</strong> a node to focus on its direct connections.</span>
-                                    </li>
-                                    <li className="flex gap-2">
-                                        <span className="font-bold">•</span>
-                                        <span>Use <strong>Find Path</strong> (top right) to discover routes between entities.</span>
-                                    </li>
-                                    <li className="flex gap-2">
-                                        <span className="font-bold">•</span>
-                                        <span>Toggle <strong>Communities</strong> to visualize clusters.</span>
-                                    </li>
-                                </ul>
-                            </div>
+                            {/* Help Blurb Removed - Moved to HelpModal */}
 
                             {/* Controls removed - moved to floating FABs */}
 
@@ -500,11 +481,15 @@ export default function App() {
                     setFocusedNode(null);
                     setFocusedEdge(null);
                 }}
-                onOpenSettings={() => setSidebarOpen(true)}
+                onOpenSettings={() => setSidebarOpen(!sidebarOpen)}
+                onOpenHelp={() => setIsHelpOpen(true)}
                 onToggleCommunities={() => setShowCommunities(!showCommunities)}
                 showCommunities={showCommunities}
                 hasPath={!!pathGraph}
             />
+
+            {/* Help Modal */}
+            {isHelpOpen && <HelpModal onClose={() => setIsHelpOpen(false)} />}
 
             <UploadModal
                 isOpen={isUploadOpen}
