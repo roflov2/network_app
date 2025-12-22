@@ -64,6 +64,13 @@ export default function App() {
         }
     };
 
+    // Auto-load Demo Data on Startup (Refined Requirement)
+    useEffect(() => {
+        if (!graph) {
+            handleDemoLoad();
+        }
+    }, []); // Run once on mount
+
     const handleUpload = async (file) => {
         setLoading(true);
 
@@ -306,26 +313,7 @@ export default function App() {
                                 </div>
                             )}
 
-                            {/* Community Detection Toggle */}
-                            {graph && (
-                                <div className="p-4 border-t border-zinc-200 dark:border-zinc-700">
-                                    <label className="flex items-center gap-2 cursor-pointer group">
-                                        <input
-                                            type="checkbox"
-                                            checked={showCommunities}
-                                            onChange={(e) => setShowCommunities(e.target.checked)}
-                                            className="w-4 h-4 rounded border-zinc-300 cursor-pointer"
-                                            style={{ accentColor: '#0F52BA' }} // Sapphire
-                                        />
-                                        <div className="flex-1">
-                                            <div className="text-sm font-medium">Show Communities</div>
-                                            <div className="text-xs text-zinc-500">
-                                                Detect and color clusters using Louvain algorithm
-                                            </div>
-                                        </div>
-                                    </label>
-                                </div>
-                            )}
+                            {/* Community Detection Toggle Removed - Moved to Floating Controls */}
 
                             {/* Table Panel */}
                             <div style={{ height: tableHeight, flexShrink: 0 }}>
@@ -471,7 +459,6 @@ export default function App() {
 
             <FloatingControls
                 onUpload={() => setIsUploadOpen(true)}
-                onLoadDemo={handleDemoLoad}
                 onFindPath={() => setIsPathOpen(true)}
                 onClearPath={() => {
                     setPathGraph(null);
@@ -481,8 +468,9 @@ export default function App() {
                     setFocusedEdge(null);
                 }}
                 onOpenSettings={() => setSidebarOpen(true)}
+                onToggleCommunities={() => setShowCommunities(!showCommunities)}
+                showCommunities={showCommunities}
                 hasPath={!!pathGraph}
-                isDemoAvailable={true} // Logic inside handles dev/prod, but consistent availability is fine
             />
 
             <UploadModal
