@@ -247,8 +247,8 @@ export default function App() {
                                             <button
                                                 onClick={() => setIsDocumentsCollapsed(!isDocumentsCollapsed)}
                                                 className={`w-full py-2 px-3 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 ${isDocumentsCollapsed
-                                                        ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700'
-                                                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
+                                                    ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700'
+                                                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
                                                     }`}
                                             >
                                                 {isDocumentsCollapsed ? <FilePlus size={16} /> : <FileMinus size={16} />}
@@ -412,7 +412,24 @@ export default function App() {
                         setPathGraph(null); // Clear path mode on new search
                     }} />}
 
-                    {graph && <Timeline graph={graph} sidebarOpen={sidebarOpen} sidebarWidth={sidebarWidth} />}
+                    {graph && (
+                        showCommunities ? (
+                            <CommunityPanel
+                                communities={communityStats}
+                                selectedCommunityId={selectedCommunity}
+                                onCommunityClick={(communityId) => {
+                                    setSelectedCommunity(selectedCommunity === communityId ? null : communityId);
+                                    setFocusedNode(null);
+                                    setPathGraph(null);
+                                }}
+                                variant="bottom"
+                                sidebarOpen={sidebarOpen}
+                                sidebarWidth={sidebarWidth}
+                            />
+                        ) : (
+                            <Timeline graph={graph} sidebarOpen={sidebarOpen} sidebarWidth={sidebarWidth} />
+                        )
+                    )}
 
                     {graph ? (
                         (() => {
@@ -458,21 +475,7 @@ export default function App() {
                 </div>
             </main >
 
-            {/* Community Statistics Panel (Right Side) */}
-            {
-                showCommunities && Object.keys(communityStats).length > 0 && (
-                    <CommunityPanel
-                        communities={communityStats}
-                        selectedCommunityId={selectedCommunity}
-                        onCommunityClick={(communityId) => {
-                            // Toggle selection: click again to clear
-                            setSelectedCommunity(selectedCommunity === communityId ? null : communityId);
-                            setFocusedNode(null); // Clear focused node
-                            setPathGraph(null); // Clear path view
-                        }}
-                    />
-                )
-            }
+            {/* Community Statistics Panel Removed (Incorporated into Bottom Panel) */}
 
             <FloatingControls
                 onUpload={() => setIsUploadOpen(true)}
