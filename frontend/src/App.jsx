@@ -216,6 +216,31 @@ export default function App() {
                                 </button>
                             </div>
 
+
+
+                            {/* Help Blurb */}
+                            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-md border border-blue-100 dark:border-blue-800 text-sm shadow-sm">
+                                <h2 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">How to use</h2>
+                                <ul className="space-y-2 text-blue-800 dark:text-blue-200 text-xs leading-relaxed">
+                                    <li className="flex gap-2">
+                                        <span className="font-bold">•</span>
+                                        <span><strong>Drag</strong> nodes to rearrange the layout.</span>
+                                    </li>
+                                    <li className="flex gap-2">
+                                        <span className="font-bold">•</span>
+                                        <span><strong>Click</strong> a node to focus on its direct connections.</span>
+                                    </li>
+                                    <li className="flex gap-2">
+                                        <span className="font-bold">•</span>
+                                        <span>Use <strong>Find Path</strong> (top right) to discover routes between entities.</span>
+                                    </li>
+                                    <li className="flex gap-2">
+                                        <span className="font-bold">•</span>
+                                        <span>Toggle <strong>Communities</strong> to visualize clusters.</span>
+                                    </li>
+                                </ul>
+                            </div>
+
                             {/* Controls removed - moved to floating FABs */}
 
                             {/* Stats */}
@@ -239,8 +264,8 @@ export default function App() {
                                         <button
                                             onClick={() => setIsDocumentsCollapsed(!isDocumentsCollapsed)}
                                             className={`w-full py-2 px-3 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 ${isDocumentsCollapsed
-                                                    ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700'
-                                                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
+                                                ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700'
+                                                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
                                                 }`}
                                         >
                                             {isDocumentsCollapsed ? <FilePlus size={16} /> : <FileMinus size={16} />}
