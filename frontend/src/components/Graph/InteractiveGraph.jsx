@@ -194,6 +194,11 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
         sigmaRef.current.setSetting("nodeReducer", (node, data) => {
             const res = { ...data };
 
+            // Apply opacity if set in data
+            if (data.opacity !== undefined) {
+                res.color = data.color + Math.round(data.opacity * 255).toString(16).padStart(2, '0');
+            }
+
             // Default Z-Index based on type (Documents=0, Entities=1)
             // We set this during graph construction, but can enforce here if needed.
             // Highlighted nodes get zIndex 10.
