@@ -232,6 +232,26 @@ export default function App() {
                                             <div className="text-xs text-zinc-500">Edges</div>
                                         </div>
                                     </div>
+
+
+                                    {/* Document Collapse Toggle (Moved here) */}
+                                    <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                                        <label className="flex items-center gap-2 cursor-pointer group">
+                                            <input
+                                                type="checkbox"
+                                                checked={isDocumentsCollapsed}
+                                                onChange={(e) => setIsDocumentsCollapsed(e.target.checked)}
+                                                className="w-4 h-4 rounded border-zinc-300 cursor-pointer"
+                                                style={{ accentColor: '#0F52BA' }}
+                                            />
+                                            <div className="flex-1">
+                                                <div className="text-sm font-medium">Collapse Documents</div>
+                                                <div className="text-xs text-zinc-500">
+                                                    Hide documents and directly connect entities
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="text-zinc-400 text-sm italic text-center mt-10">
@@ -295,26 +315,7 @@ export default function App() {
                                 }}
                             />
 
-                            {/* Document Collapse Toggle */}
-                            {graph && (
-                                <div className="p-4 border-t border-zinc-200 dark:border-zinc-700">
-                                    <label className="flex items-center gap-2 cursor-pointer group">
-                                        <input
-                                            type="checkbox"
-                                            checked={isDocumentsCollapsed}
-                                            onChange={(e) => setIsDocumentsCollapsed(e.target.checked)}
-                                            className="w-4 h-4 rounded border-zinc-300 cursor-pointer"
-                                            style={{ accentColor: '#0F52BA' }}
-                                        />
-                                        <div className="flex-1">
-                                            <div className="text-sm font-medium">Collapse Documents</div>
-                                            <div className="text-xs text-zinc-500">
-                                                Hide documents and directly connect entities
-                                            </div>
-                                        </div>
-                                    </label>
-                                </div>
-                            )}
+
 
                             {/* Community Detection Toggle Removed - Moved to Floating Controls */}
 
@@ -379,19 +380,21 @@ export default function App() {
                         document.body.style.cursor = 'ew-resize';
                     }}
                 />
-            </aside>
+            </aside >
 
             {/* Main Content (Fullscreen Graph) */}
-            <main className="absolute inset-0 h-full w-full flex flex-col">
+            < main className="absolute inset-0 h-full w-full flex flex-col" >
                 {/* Mobile Toggle (Hamburger) - Positioned to ensure visibility over graph but under sidebar when open */}
-                {!sidebarOpen && (
-                    <button
-                        onClick={() => setSidebarOpen(true)}
-                        className="absolute top-4 left-4 z-50 p-2 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm rounded-md shadow-md hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
-                    >
-                        <Menu size={20} />
-                    </button>
-                )}
+                {
+                    !sidebarOpen && (
+                        <button
+                            onClick={() => setSidebarOpen(true)}
+                            className="absolute top-4 left-4 z-50 p-2 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm rounded-md shadow-md hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+                        >
+                            <Menu size={20} />
+                        </button>
+                    )
+                }
 
                 {/* Graph Area */}
                 <div className="flex-1 bg-zinc-100 dark:bg-zinc-950 relative overflow-hidden">
@@ -444,21 +447,23 @@ export default function App() {
                         </div>
                     )}
                 </div>
-            </main>
+            </main >
 
             {/* Community Statistics Panel (Right Side) */}
-            {showCommunities && Object.keys(communityStats).length > 0 && (
-                <CommunityPanel
-                    communities={communityStats}
-                    selectedCommunityId={selectedCommunity}
-                    onCommunityClick={(communityId) => {
-                        // Toggle selection: click again to clear
-                        setSelectedCommunity(selectedCommunity === communityId ? null : communityId);
-                        setFocusedNode(null); // Clear focused node
-                        setPathGraph(null); // Clear path view
-                    }}
-                />
-            )}
+            {
+                showCommunities && Object.keys(communityStats).length > 0 && (
+                    <CommunityPanel
+                        communities={communityStats}
+                        selectedCommunityId={selectedCommunity}
+                        onCommunityClick={(communityId) => {
+                            // Toggle selection: click again to clear
+                            setSelectedCommunity(selectedCommunity === communityId ? null : communityId);
+                            setFocusedNode(null); // Clear focused node
+                            setPathGraph(null); // Clear path view
+                        }}
+                    />
+                )
+            }
 
             <FloatingControls
                 onUpload={() => setIsUploadOpen(true)}
@@ -488,6 +493,6 @@ export default function App() {
                 nodes={graph ? graph.mapNodes((n, a) => ({ id: n, label: a.label || n })) : []}
                 onFindPath={handleFindPath}
             />
-        </div>
+        </div >
     );
 }
