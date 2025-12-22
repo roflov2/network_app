@@ -129,7 +129,7 @@ export function greyOutNonCommunityNodes(graph, communityId) {
             // Ensure edges within community are visible
             modified.setEdgeAttribute(edge, 'hidden', false);
             // Make edges within community darker and more prominent
-            modified.setEdgeAttribute(edge, 'color', '#000000'); // Pure black for maximum contrast
+            modified.setEdgeAttribute(edge, 'color', '#444444'); // Dark grey for good contrast without being too harsh
             modified.setEdgeAttribute(edge, 'size', 3); // Thicker edges
         }
     });
