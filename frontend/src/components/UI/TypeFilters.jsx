@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Filter, Eye, EyeOff, ChevronDown, ChevronRight } from 'lucide-react';
 import { getColorForType } from '../../utils/graph-logic';
 
-export default function TypeFilters({ availableTypes, selectedTypes, onToggleType, onSelectAll, onDeselectAll, overrideColor }) {
+export default function TypeFilters({ availableTypes, selectedTypes, onToggleType, onSelectAll, onDeselectAll, hideColors }) {
     const [isExpanded, setIsExpanded] = useState(false);
 
     if (!availableTypes || availableTypes.length === 0) return null;
@@ -37,7 +37,7 @@ export default function TypeFilters({ availableTypes, selectedTypes, onToggleTyp
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                     {availableTypes.map(type => {
                         const isSelected = selectedTypes.has(type);
-                        const color = overrideColor || getColorForType(type);
+                        const color = getColorForType(type);
 
                         return (
                             <label
@@ -51,10 +51,12 @@ export default function TypeFilters({ availableTypes, selectedTypes, onToggleTyp
                                     className="w-4 h-4 rounded border-zinc-300 cursor-pointer"
                                     style={{ accentColor: '#0F52BA' }} // Sapphire
                                 />
-                                <div
-                                    className="w-3 h-3 rounded-full flex-shrink-0"
-                                    style={{ backgroundColor: color }}
-                                />
+                                {!hideColors && (
+                                    <div
+                                        className="w-3 h-3 rounded-full flex-shrink-0"
+                                        style={{ backgroundColor: color }}
+                                    />
+                                )}
                                 <span className="text-sm flex-1">{type}</span>
                                 {isSelected ? (
                                     <Eye size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: '#0F52BA' }} />
