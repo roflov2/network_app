@@ -137,7 +137,9 @@ export default function App() {
     };
 
     // Determine what to display: Path, Focus (2-hop), or Full Graph with Type Filtering
-    const getDisplayedGraph = () => {
+    // Determine what to display: Path, Focus (2-hop), or Full Graph with Type Filtering
+    // Memoized to prevent physics restarts on unrelated UI changes (like sidebar resize)
+    const displayedGraph = useMemo(() => {
         if (pathGraph) return pathGraph;
         if (!graph) return null;
 
@@ -155,7 +157,6 @@ export default function App() {
         if (showCommunities) {
             const result = detectCommunities(displayGraph);
             displayGraph = result.graph;
-            // Don't call setCommunityStats here - it causes infinite loop!
         }
 
         // Apply document collapse if enabled
@@ -169,7 +170,9 @@ export default function App() {
         }
 
         return displayGraph;
-    };
+    }, [graph, pathGraph, focusedNode, selectedTypes, showCommunities, isDocumentsCollapsed, selectedCommunity]);
+
+
 
     // Calculate community stats separately to avoid infinite render loop
     useEffect(() => {
@@ -325,7 +328,7 @@ export default function App() {
                                     />
                                 ) : (
                                     <DataTable
-                                        graph={viewAllData ? graph : getDisplayedGraph()}
+                                        graph={viewAllData ? graph : displayedGraph}
                                         fullGraph={graph}
                                         viewAllData={viewAllData}
                                         onToggleViewAll={() => setViewAllData(!viewAllData)}
@@ -405,7 +408,7 @@ export default function App() {
                             return (
                                 <ErrorBoundary fallback={<div className="p-4 bg-red-100 text-red-800">Graph Crash Occurred. Check console for details.</div>}>
                                     <InteractiveGraph
-                                        graphData={getDisplayedGraph()}
+                                        graphData={displayedGraph}
                                         key={graph.order} // Stable key to prevent re-mounting on resize
                                         focusedNode={focusedNode}
                                         focusedEdge={focusedEdge}
