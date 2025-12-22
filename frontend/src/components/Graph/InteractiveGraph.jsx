@@ -253,15 +253,14 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
                 return res;
             }
 
-            // Visual Hierarchy: Faint edges for Documents
-            // If we are not hovering/focusing, make document edges faint
-            // We can detect document edges by checking source type logic or just defaulting all edges to faint 
-            // since this is a bipartite graph and most edges involve a document.
-            // A better check: is one extremity a Document?
-            // However, inspecting node attributes here is expensive.
-            // Strategy: Default edges to darker grey for visibility on white background
+            // Visual Hierarchy: Use edge data attributes if explicitly set (e.g., for community edges)
+            // Otherwise apply default styling
             if (!hoveredNode && !focusedNode && !focusedEdge) {
-                res.color = "rgba(100, 100, 100, 0.5)";
+                // Only apply default color if not explicitly set in data
+                if (!data.color || data.color === '#CCCCCC') {
+                    res.color = "rgba(100, 100, 100, 0.5)";
+                }
+                // Preserve size if explicitly set
             }
 
             if (hoveredNode && displayedGraph.hasNode(hoveredNode)) {
