@@ -138,23 +138,55 @@ export function greyOutNonCommunityNodes(graph, communityId) {
 }
 
 export function applyLayoutAndCommunities(graph) {
-    // 1. Calculate Degree Centrality for Sizing (Visual Hierarchy)
-    // We want hubs to be big and leaves to be small
-    const degrees = {};
-    let maxDegree = 1;
-
+    // 1. Detect Communities FIRST (Crucial Step)
+    // We need to know who belongs together before we decide where to put them.
+    const communities = louvain(graph);
     graph.forEachNode((node) => {
-        const degree = graph.degree(node);
-        degrees[node] = degree;
-        if (degree > maxDegree) maxDegree = degree;
+        graph.setNodeAttribute(node, 'community', communities[node]);
     });
 
-    // 2. Initialize Nodes (Size & Color)
+    // 2. Analyze Community Counts to assign "Real Estate"
+    const communityCounts = {};
+    let totalNodes = 0;
+
     graph.forEachNode((node, attr) => {
-        // Logarithmic sizing: prevents massive nodes from covering everything
-        // Formula: Base size (3) + Log(degree) factor
+        const comm = attr.community;
+        communityCounts[comm] = (communityCounts[comm] || 0) + 1;
+        totalNodes++;
+    });
+
+    const communityList = Object.keys(communityCounts);
+    const angleStep = (2 * Math.PI) / communityList.length;
+    const initialRadius = 1000; // Large radius to ensure separation
+
+    // 3. Pre-Calculate Centrality for Sizing
+    // (Making hubs bigger helps visual hierarchy)
+    const degrees = {};
+    graph.forEachNode(node => degrees[node] = graph.degree(node));
+
+    // 4. Seeding Positions: The "Circle of Communities" Logic
+    graph.forEachNode((node, attr) => {
+        const commId = attr.community;
+
+        // Find the "center" of this node's community
+        // We map the community ID to an angle on a circle
+        const commIndex = communityList.indexOf(String(commId));
+        const angle = commIndex * angleStep;
+
+        // Calculate the "Center of Gravity" for this specific community
+        const communityCenterX = Math.cos(angle) * initialRadius;
+        const communityCenterY = Math.sin(angle) * initialRadius;
+
+        // Place the node randomly *around* its community center
+        // (Adding jitter so they don't stack on top of each other)
+        if (attr.x === undefined || attr.y === undefined) {
+            graph.setNodeAttribute(node, 'x', communityCenterX + (Math.random() * 200 - 100));
+            graph.setNodeAttribute(node, 'y', communityCenterY + (Math.random() * 200 - 100));
+        }
+
+        // Apply Logarithmic Sizing
         const degree = degrees[node] || 0;
-        let size = 3 + (Math.log(degree + 1) * 4);
+        let size = 5 + (Math.log(degree + 1) * 3);
 
         // Visual Hierarchy: Reduce size of Document nodes
         if (attr.type === 'Document') {
@@ -163,44 +195,30 @@ export function applyLayoutAndCommunities(graph) {
 
         graph.setNodeAttribute(node, 'size', size);
 
-        // Random starting positions (helps the layout engine start)
-        if (attr.x === undefined || attr.y === undefined) {
-            graph.setNodeAttribute(node, 'x', Math.random() * 100);
-            graph.setNodeAttribute(node, 'y', Math.random() * 100);
-        }
-
-        // Color by Type
+        // Apply Color by Type
         const nodeType = attr.type || 'Unknown';
         let color = getColorForType(nodeType);
 
         // Visual Hierarchy: Faint Documents
         if (nodeType === 'Document') {
-            // Apply 60% opacity to the base grey (#6B7280 -> #6B728099)
-            // User feedback: 30% (4D) was too faint.
+            // Apply 60% opacity to the base grey
             color = color + '99';
         }
 
         graph.setNodeAttribute(node, 'color', color);
     });
 
-    // 3. Run Community Detection (Louvain)
-    const communities = louvain(graph);
-    graph.forEachNode((node) => {
-        graph.setNodeAttribute(node, 'community', communities[node]);
-    });
-
-    // 4. RUN THE PHYSICS LAYOUT (The Missing Step!)
-    // We run ForceAtlas2 for a set number of iterations to organize the graph.
-    // 'barnesHutOptimize: true' is critical for performance on large graphs.
+    // 5. Run ForceAtlas2 to "Relax" the Graph
+    // Since nodes are already grouped, we don't need aggressive gravity.
+    // We just need to tighten the local connections.
     forceAtlas2.assign(graph, {
-        iterations: 100, // Run 100 frames of physics
+        iterations: 150, // Enough to settle
         settings: {
-            gravity: 1,             // Pulls disconnected parts back to center
-            scalingRatio: 10,       // Higher = more space between nodes
-            barnesHutOptimize: true,// Essential for performance > 500 nodes
-            barnesHutTheta: 0.5,
-            edgeWeightInfluence: 1, // Higher = heavy edges pull nodes closer
-            strongGravityMode: true // Helps create a tighter circular shape
+            gravity: 0.5,           // Lower gravity prevents communities merging back into a blob
+            scalingRatio: 20,       // High scaling keeps communities distinct
+            barnesHutOptimize: true,
+            strongGravityMode: false, // OFF: We don't want to force a circle shape anymore
+            outboundAttractionDistribution: true // Helps spread out hubs ("anti-hairball" setting)
         }
     });
 
