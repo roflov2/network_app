@@ -37,7 +37,7 @@ const SECONDARY_PALETTE = [
 ];
 
 // Generate a consistent color for unknown types
-function getColorForType(type) {
+export function getColorForType(type) {
     if (NODE_TYPE_COLORS[type]) {
         return NODE_TYPE_COLORS[type];
     }

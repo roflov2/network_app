@@ -1,45 +1,12 @@
 import React, { useState } from 'react';
 import { Filter, Eye, EyeOff, ChevronDown, ChevronRight } from 'lucide-react';
+import { getColorForType } from '../../utils/graph-logic';
 
 export default function TypeFilters({ availableTypes, selectedTypes, onToggleType, onSelectAll, onDeselectAll }) {
     const [isExpanded, setIsExpanded] = useState(false);
 
     if (!availableTypes || availableTypes.length === 0) return null;
 
-    // Calculate type colors (must match graph-logic.js - website brand palette)
-    const getTypeColor = (type) => {
-        const colors = {
-            'Document': '#6B7280',
-            'Person': '#0F52BA',         // Sapphire
-            'Phone': '#F28500',          // Tangerine
-            'Organisation': '#483C32',   // Taupe
-            'Organization': '#483C32',   // Taupe
-            'Email': '#E0115F',          // Ruby
-            'Website': '#0F52BA',        // Sapphire
-            'Cryptocurrency': '#F28500', // Tangerine
-            'Wallet': '#F28500',         // Tangerine
-        };
-
-        if (colors[type]) {
-            return colors[type];
-        }
-
-        // Secondary color palette (matches graph-logic.js)
-        const secondaryPalette = [
-            '#8B5CF6', '#10B981', '#F59E0B', '#3B82F6', '#EC4899',
-            '#6366F1', '#14B8A6', '#A855F7', '#F97316', '#06B6D4',
-            '#D946EF', '#84CC16', '#EF4444', '#8B4513', '#4B5563',
-        ];
-
-        // Use deterministic hash to select from secondary palette
-        let hash = 0;
-        for (let i = 0; i < type.length; i++) {
-            hash = type.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        const index = Math.abs(hash) % secondaryPalette.length;
-        return secondaryPalette[index];
-    };
 
     return (
         <div className="p-4 border-t border-zinc-200 dark:border-zinc-700">
@@ -75,7 +42,7 @@ export default function TypeFilters({ availableTypes, selectedTypes, onToggleTyp
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                     {availableTypes.map(type => {
                         const isSelected = selectedTypes.has(type);
-                        const color = getTypeColor(type);
+                        const color = getColorForType(type);
 
                         return (
                             <label
