@@ -109,10 +109,10 @@ export function greyOutNonCommunityNodes(graph, communityId) {
             // Grey out nodes not in selected community
             modified.setNodeAttribute(node, 'color', '#999999');
             modified.setNodeAttribute(node, 'originalColor', attributes.color); // Store original
-            modified.setNodeAttribute(node, 'zIndex', 0); // Low z-index for greyed nodes
+            modified.setNodeAttribute(node, 'zIndex', -10); // Very low z-index for greyed nodes
         } else {
-            // Selected community nodes on top
-            modified.setNodeAttribute(node, 'zIndex', 10);
+            // Selected community nodes above greyed but below contour
+            modified.setNodeAttribute(node, 'zIndex', -5);
         }
     });
 
