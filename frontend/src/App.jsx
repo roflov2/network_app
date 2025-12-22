@@ -425,6 +425,7 @@ export default function App() {
                                 variant="bottom"
                                 sidebarOpen={sidebarOpen}
                                 sidebarWidth={sidebarWidth}
+                                onClose={() => setShowCommunities(false)}
                             />
                         ) : (
                             <Timeline graph={graph} sidebarOpen={sidebarOpen} sidebarWidth={sidebarWidth} />

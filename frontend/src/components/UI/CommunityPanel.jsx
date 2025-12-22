@@ -1,10 +1,11 @@
 import React from 'react';
-import { Users } from 'lucide-react';
+import { Users, X } from 'lucide-react';
 
 export default function CommunityPanel({
     communities,
     selectedCommunityId,
     onCommunityClick,
+    onClose,
     variant = 'sidebar', // 'sidebar' | 'bottom'
     sidebarOpen = false,
     sidebarWidth = 0
@@ -46,9 +47,20 @@ export default function CommunityPanel({
                         Detected Communities
                     </h3>
                 </div>
-                <p className="text-xs text-zinc-500">
-                    {sortedCommunities.length} clusters found
-                </p>
+                <div className="flex items-center gap-2">
+                    <p className="text-xs text-zinc-500">
+                        {sortedCommunities.length} clusters found
+                    </p>
+                    {onClose && (
+                        <button
+                            onClick={onClose}
+                            className="p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-full transition-colors"
+                            title="Close Community Mode"
+                        >
+                            <X size={16} />
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className={contentClass}>
