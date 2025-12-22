@@ -848,6 +848,72 @@ return (
 
 ---
 
+### 9.5 Community Visualization Enhancements (December 2024)
+
+#### Circle of Communities Layout Algorithm
+
+**Purpose:** Replaces random "Big Bang" initialization with intelligent community-based positioning.
+
+**Benefits:**
+- Distinct community clusters visible immediately on load
+- Reduces layout computation time by providing optimal starting positions
+- Creates "island" structure similar to high-quality visualizations (e.g., Wikipedia graph explorer)
+
+**Algorithm Steps:**
+1. **Community Detection First:** Runs Louvain algorithm before any positioning
+2. **Sector Assignment:** Maps each community to a circular sector (angle = `2π / numCommunities`)
+3. **Node Seeding:** Places nodes around their community's center with random jitter (±100px)
+4. **Physics Refinement:** ForceAtlas2 tightens local connections without merging communities
+
+**Parameters:**
+- **Initial Radius:** 1000px (separation distance)
+- **ForceAtlas2 Settings:**
+  - Gravity: 0.5 (low to prevent community merging)
+  - Scaling Ratio: 20 (high to maintain separation)
+  - Iterations: 150
+  - Strong Gravity Mode: OFF
+  - Outbound Attraction Distribution: ON (anti-hairball)
+
+**File:** `graph-logic.js:applyLayoutAndCommunities()`
+
+#### Community Selection Visual Feedback
+
+**Greying Effect:**
+- **Trigger:** Selecting a community from the Community Panel
+- **Behavior:** Non-selected community nodes turn light grey (`#CCCCCC`) and reduce in size (70%)
+- **Purpose:** Focus attention on selected community while maintaining graph context
+
+**Contour Highlighting:**
+- **Technology:** WebGL layer using `@sigma/layer-webgl`
+- **Visual:** Colored circle border around selected community nodes
+- **Properties:**
+  - Border Color: Matches community color from stats
+  - Border Thickness: 8px
+  - Radius: 150px
+  - Fill: Transparent
+
+**Label Management:**
+- Greyed nodes hide labels by default
+- Labels reveal on hover
+- Selected community nodes always show labels
+
+**Edge Styling:**
+- **Community Edges:** Dark grey (`#444444`), size 3, fully visible
+- **Cross-Community Edges:** Hidden (`hidden: true`)
+
+**Cleanup Behavior:**
+- Contours properly removed when:
+  - Deselecting community
+  - Exiting community mode
+  - Changing community selection
+
+**Implementation:**
+- Logic: `graph-logic.js:greyOutNonCommunityNodes()`
+- Rendering: `InteractiveGraph.jsx` (Community Contour Effect useEffect)
+- Cleanup: Ref-based cleanup on component unmount/state change
+
+---
+
 ## 10. Future Enhancements
 
 * **Export Graph:** Button to save the current visual state (JSON) to local disk to "save" a session.
@@ -856,4 +922,5 @@ return (
 
 ---
 
-**End of Specification v2.0**
+**End of Specification v2.1**
+
