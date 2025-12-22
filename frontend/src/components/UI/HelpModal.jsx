@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, HelpCircle, MousePointer2, Move, Navigation, Users } from 'lucide-react';
+import { X, HelpCircle, MousePointer2, Move, Navigation, Users, Calendar } from 'lucide-react';
 
 export default function HelpModal({ onClose }) {
     return (
@@ -79,6 +79,18 @@ export default function HelpModal({ onClose }) {
                                     <h4 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Communities</h4>
                                     <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                                         Toggle community detection to identify and visualise distinct clusters within the network.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-md h-fit">
+                                    <Calendar size={18} className="text-zinc-600 dark:text-zinc-400" />
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Temporal Distribution</h4>
+                                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                                        View when network entities appeared over time. Expand the bottom panel to explore trends by year or month.
                                     </p>
                                 </div>
                             </div>
