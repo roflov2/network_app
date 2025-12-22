@@ -194,8 +194,8 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
         sigmaRef.current.setSetting("nodeReducer", (node, data) => {
             const res = { ...data };
 
-            // Check if this node is greyed out (smaller size = greyed)
-            const isGreyedOut = data.size && data.size < 5;
+            // Check if this node is greyed out (grey color = greyed)
+            const isGreyedOut = data.color && data.color.startsWith('#CCCCCC');
 
             // Hide labels for greyed-out nodes by default
             if (isGreyedOut) {
