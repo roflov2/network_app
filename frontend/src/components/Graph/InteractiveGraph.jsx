@@ -251,9 +251,9 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
             // since this is a bipartite graph and most edges involve a document.
             // A better check: is one extremity a Document?
             // However, inspecting node attributes here is expensive.
-            // Strategy: Default edges to faint grey with low opacity.
+            // Strategy: Default edges to darker grey for visibility on white background
             if (!hoveredNode && !focusedNode && !focusedEdge) {
-                res.color = "rgba(200, 200, 200, 0.6)"; // Increased from 0.4 to 0.6
+                res.color = "rgba(100, 100, 100, 0.5)";
             }
 
             if (hoveredNode && displayedGraph.hasNode(hoveredNode)) {
