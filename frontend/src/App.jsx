@@ -397,7 +397,7 @@ export default function App() {
                         setPathGraph(null); // Clear path mode on new search
                     }} />}
 
-                    {graph && <Timeline graph={graph} />}
+                    {graph && <Timeline graph={graph} sidebarOpen={sidebarOpen} sidebarWidth={sidebarWidth} />}
 
                     {graph ? (
                         (() => {

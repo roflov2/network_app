@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Calendar, ChevronUp, ChevronDown } from 'lucide-react';
 
-export default function Timeline({ graph }) {
+export default function Timeline({ graph, sidebarOpen, sidebarWidth }) {
     const [granularity, setGranularity] = useState('year'); // 'year' | 'month'
     const [isExpanded, setIsExpanded] = useState(true);
 
@@ -99,7 +99,10 @@ export default function Timeline({ graph }) {
     if (!graph) return null;
 
     return (
-        <div className={`absolute bottom-0 left-0 right-0 z-20 bg-white/95 dark:bg-zinc-900/95 border-t border-zinc-200 dark:border-zinc-700 transition-all duration-300 ease-in-out ${isExpanded ? 'h-64' : 'h-12'}`}>
+        <div
+            style={{ left: sidebarOpen ? sidebarWidth : 0 }}
+            className={`absolute bottom-0 right-0 z-20 bg-white/95 dark:bg-zinc-900/95 border-t border-zinc-200 dark:border-zinc-700 transition-all duration-300 ease-in-out ${isExpanded ? 'h-64' : 'h-12'}`}
+        >
 
             {/* Header / Toggle */}
             <div className="flex items-center justify-between px-4 h-12 bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
