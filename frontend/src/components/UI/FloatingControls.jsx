@@ -29,10 +29,10 @@ export default function FloatingControls({
             {/* Toggle Communities */}
             <button
                 onClick={onToggleCommunities}
-                className={`${btnClass} ${showCommunities ? activeClass : ''}`}
+                className={`${btnClass} ${showCommunities ? "bg-red-50 text-red-600 border-red-200 hover:bg-red-100" : ''}`}
                 title={showCommunities ? "Hide Communities" : "Show Communities"}
             >
-                <Users size={20} />
+                {showCommunities ? <X size={20} /> : <Users size={20} />}
                 <span className="absolute right-full mr-2 px-2 py-1 bg-zinc-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                     {showCommunities ? "Hide Communities" : "Show Communities"}
                 </span>
