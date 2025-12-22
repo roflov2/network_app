@@ -107,14 +107,13 @@ export function greyOutNonCommunityNodes(graph, communityId) {
     modified.forEachNode((node, attributes) => {
         if (attributes.community !== parseInt(communityId)) {
             // Grey out nodes not in selected community
-            modified.setNodeAttribute(node, 'color', '#999999');
+            modified.setNodeAttribute(node, 'color', '#CCCCCC'); // Light grey instead of dark
             modified.setNodeAttribute(node, 'originalColor', attributes.color); // Store original
             modified.setNodeAttribute(node, 'zIndex', -10); // Very low z-index for greyed nodes
-            modified.setNodeAttribute(node, 'opacity', 0.9); // 90% opaque
+            modified.setNodeAttribute(node, 'size', (attributes.size || 5) * 0.7); // Smaller size
         } else {
             // Selected community nodes above greyed but below contour
             modified.setNodeAttribute(node, 'zIndex', -5);
-            modified.setNodeAttribute(node, 'opacity', 1); // Full opacity
         }
     });
 

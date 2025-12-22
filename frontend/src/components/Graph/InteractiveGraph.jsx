@@ -194,13 +194,8 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
         sigmaRef.current.setSetting("nodeReducer", (node, data) => {
             const res = { ...data };
 
-            // Apply opacity if set in data
-            if (data.opacity !== undefined) {
-                res.color = data.color + Math.round(data.opacity * 255).toString(16).padStart(2, '0');
-            }
-
-            // Check if this node is greyed out (not in selected community)
-            const isGreyedOut = data.opacity !== undefined && data.opacity < 1;
+            // Check if this node is greyed out (smaller size = greyed)
+            const isGreyedOut = data.size && data.size < 5;
 
             // Default Z-Index based on type (Documents=0, Entities=1)
             // We set this during graph construction, but can enforce here if needed.
