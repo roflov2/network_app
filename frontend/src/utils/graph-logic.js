@@ -137,6 +137,31 @@ export function greyOutNonCommunityNodes(graph, communityId) {
     return modified;
 }
 
+// Filter graph to ONLY show nodes in the selected community (for Table view)
+export function filterGraphByCommunity(graph, communityId) {
+    if (!graph) return new Graph();
+    if (communityId === null || communityId === undefined) return graph;
+
+    const filtered = new Graph();
+    const commId = parseInt(communityId);
+
+    // Add nodes belonging to the community
+    graph.forEachNode((node, attr) => {
+        if (attr.community === commId) {
+            filtered.addNode(node, attr);
+        }
+    });
+
+    // Add edges where both source and target are in the community
+    graph.forEachEdge((edge, attr, source, target) => {
+        if (filtered.hasNode(source) && filtered.hasNode(target)) {
+            filtered.addEdgeWithKey(edge, source, target, attr);
+        }
+    });
+
+    return filtered;
+}
+
 export function applyLayoutAndCommunities(graph) {
     // 1. Detect Communities FIRST (Crucial Step)
     // We need to know who belongs together before we decide where to put them.

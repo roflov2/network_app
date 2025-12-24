@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import InteractiveGraph from './components/Graph/InteractiveGraph';
 import UploadModal from './components/UI/UploadModal';
 import { Upload, Play, Menu, X, Search, Navigation, FileMinus, FilePlus } from 'lucide-react';
-import { processGraphData, applyLayoutAndCommunities, findShortestPath, getPathSubgraph, filterGraphByTypes, getNodeTypes, collapseDocuments, get2HopNeighborhood, detectCommunities, greyOutNonCommunityNodes } from './utils/graph-logic';
+import { processGraphData, applyLayoutAndCommunities, findShortestPath, getPathSubgraph, filterGraphByTypes, getNodeTypes, collapseDocuments, get2HopNeighborhood, detectCommunities, greyOutNonCommunityNodes, filterGraphByCommunity } from './utils/graph-logic';
 import { SearchUI } from './components/UI/SearchOverlay';
 import PathModal from './components/UI/PathModal';
 import TypeFilters from './components/UI/TypeFilters';
@@ -174,6 +174,22 @@ export default function App() {
         return displayGraph;
     }, [graph, pathGraph, focusedNode, selectedTypes, showCommunities, isDocumentsCollapsed, selectedCommunity]);
 
+    // Derive the graph data specifically for the table
+    // If a community is selected, we want the table to STRICTLY filter to that community
+    // whereas the visual graph just greys out the non-community nodes.
+    const tableGraph = useMemo(() => {
+        if (viewAllData) return graph;
+
+        let tGraph = displayedGraph;
+
+        // Apply strict community filtering for the table if a community is selected
+        if (showCommunities && selectedCommunity !== null) {
+            tGraph = filterGraphByCommunity(tGraph, selectedCommunity);
+        }
+
+        return tGraph;
+    }, [displayedGraph, viewAllData, graph, showCommunities, selectedCommunity]);
+
 
 
     // Calculate community stats separately to avoid infinite render loop
@@ -339,7 +355,7 @@ export default function App() {
                                     />
                                 ) : (
                                     <DataTable
-                                        graph={viewAllData ? graph : displayedGraph}
+                                        graph={tableGraph}
                                         fullGraph={graph}
                                         viewAllData={viewAllData}
                                         onToggleViewAll={() => setViewAllData(!viewAllData)}
