@@ -2,13 +2,20 @@ import React, { useEffect, useRef, useState } from "react";
 import GraphControls from "./GraphControls";
 import Sigma from "sigma";
 import { NodeCircleProgram, EdgeLineProgram, EdgeArrowProgram } from "sigma/rendering";
+import { NodeImageProgram } from "@sigma/node-image";
 import { bindWebGLLayer, createContoursProgram } from "@sigma/layer-webgl";
 
 import FA2Layout from "graphology-layout-forceatlas2/worker";
 import Graph from 'graphology';
 import { get2HopNeighborhood } from "../../utils/graph-logic";
 
-export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, onNodeClick, onEdgeClick, selectedCommunity, communityStats }) {
+// Icons for Centrality Avatars (SVG Data URIs)
+// Bridge: A linking path icon
+const BRIDGE_ICON = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEwIDEzYTVlNSA1IDAgMCAwIDcuNTQgLjU0bDMsM2E1IDUgMCAwIDAgNy4wNy03LjA3bC0xLjcyLTEuNzEiLz48cGF0aCBkPSJNMTQgMTFhNSA1IDAgMCAwLTcuNTQtLjU0bC0zLTNhNSA1IDAgMCAwLTcuMDcgNy4wN2wxLjcyIDEuNzEiLz48L3N2Zz4=";
+// Hub: A target/star icon
+const HUB_ICON = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSI2Ii8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMiIvPjwvc3ZnPg==";
+
+export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, onNodeClick, onEdgeClick, selectedCommunity, communityStats, specialNodes }) {
     const containerRef = useRef(null);
     const sigmaRef = useRef(null);
     const layoutRef = useRef(null);
@@ -47,7 +54,7 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
             // **Efficient Programs**
             defaultNodeType: "circle",            // Fastest node rendering
             defaultEdgeType: "line",              // Simple edge rendering
-            nodeProgramClasses: { circle: NodeCircleProgram },
+            nodeProgramClasses: { circle: NodeCircleProgram, image: NodeImageProgram },
             edgeProgramClasses: { line: EdgeLineProgram, arrow: EdgeArrowProgram },
 
             // **Dynamic Quality Reduction**
@@ -214,6 +221,25 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
 
             // Skip hover/focus overrides for greyed-out nodes in community mode
             if (!isGreyedOut) {
+
+                // CENTRALITY AVATARS (Bridge & Hub)
+                // Only apply if we have special nodes identified for the selected community
+                if (specialNodes) {
+                    if (node === specialNodes.hub) {
+                        res.type = "image";
+                        res.image = HUB_ICON;
+                        res.color = "#F59E0B"; // Amber for Hub
+                        res.size = (data.size || 5) * 1.8; // Make it prominent
+                        res.zIndex = 20; // Top z-index
+                    } else if (node === specialNodes.bridge) {
+                        res.type = "image";
+                        res.image = BRIDGE_ICON;
+                        res.color = "#8B5CF6"; // Purple for Bridge
+                        res.size = (data.size || 5) * 1.8; // Make it prominent
+                        res.zIndex = 20; // Top z-index
+                    }
+                }
+
                 if (hoveredNode && displayedGraph.hasNode(hoveredNode)) {
                     if (node === hoveredNode) {
                         res.highlighted = true;

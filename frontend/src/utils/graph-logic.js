@@ -2,6 +2,8 @@ import Graph from 'graphology';
 import louvain from 'graphology-communities-louvain';
 import Fuse from 'fuse.js';
 import forceAtlas2 from 'graphology-layout-forceatlas2';
+import betweenness from 'graphology-metrics/centrality/betweenness';
+import degree from 'graphology-metrics/centrality/degree';
 
 // Node type color mapping (Website brand palette)
 const NODE_TYPE_COLORS = {
@@ -160,6 +162,51 @@ export function filterGraphByCommunity(graph, communityId) {
     });
 
     return filtered;
+}
+
+// Calculate centrality for a community to find Hub and Bridge
+export function getCommunityCentrality(graph, communityId) {
+    if (!graph || communityId === null || communityId === undefined) return { hub: null, bridge: null };
+
+    // 1. Create a subgraph for the community to calculate local centrality
+    // (Centrality should be relative to the community structure)
+    const communityGraph = filterGraphByCommunity(graph, communityId);
+
+    if (communityGraph.order === 0) return { hub: null, bridge: null };
+
+    // 2. Calculate Degree Centrality (Hub)
+    // Degree is simple: who has the most connections within the community?
+    const degrees = degree.degreeCentrality(communityGraph);
+    let maxDegree = -1;
+    let hubNode = null;
+
+    for (const [node, score] of Object.entries(degrees)) {
+        if (score > maxDegree) {
+            maxDegree = score;
+            hubNode = node;
+        }
+    }
+
+    // 3. Calculate Betweenness Centrality (Bridge)
+    // Betweenness is expensive, but community subgraphs are usually small enough.
+    // Who acts as a bridge/connector within the community?
+    const betweennessScores = betweenness(communityGraph);
+    let maxBetweenness = -1;
+    let bridgeNode = null;
+
+    for (const [node, score] of Object.entries(betweennessScores)) {
+        // Exclude the hub from being the bridge if possible, to show two different interesting nodes
+        // unless it's overwhelmingly the bridge too.
+        if (score > maxBetweenness) {
+            maxBetweenness = score;
+            bridgeNode = node;
+        }
+    }
+
+    // Fallback: If bridge is same as hub, try to find second best bridge?
+    // For now, allow them to be the same if one node dominates everything.
+
+    return { hub: hubNode, bridge: bridgeNode };
 }
 
 export function applyLayoutAndCommunities(graph) {

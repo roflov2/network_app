@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import InteractiveGraph from './components/Graph/InteractiveGraph';
 import UploadModal from './components/UI/UploadModal';
 import { Upload, Play, Menu, X, Search, Navigation, FileMinus, FilePlus } from 'lucide-react';
-import { processGraphData, applyLayoutAndCommunities, findShortestPath, getPathSubgraph, filterGraphByTypes, getNodeTypes, collapseDocuments, get2HopNeighborhood, detectCommunities, greyOutNonCommunityNodes, filterGraphByCommunity } from './utils/graph-logic';
+import { processGraphData, applyLayoutAndCommunities, findShortestPath, getPathSubgraph, filterGraphByTypes, getNodeTypes, collapseDocuments, get2HopNeighborhood, detectCommunities, greyOutNonCommunityNodes, filterGraphByCommunity, getCommunityCentrality } from './utils/graph-logic';
 import { SearchUI } from './components/UI/SearchOverlay';
 import PathModal from './components/UI/PathModal';
 import TypeFilters from './components/UI/TypeFilters';
@@ -159,7 +159,17 @@ export default function App() {
         // 3. Community Detection (if enabled)
         if (showCommunities) {
             // detectCommunities returns { graph, stats }
-            return detectCommunities(processed);
+            const result = detectCommunities(processed);
+            // Increase listeners to suppress warning (Sigma + Layout + Internal events)
+            if (result.graph && result.graph.setMaxListeners) {
+                result.graph.setMaxListeners(20);
+            }
+            return result;
+        }
+
+        // Increase listeners here too
+        if (processed && processed.setMaxListeners) {
+            processed.setMaxListeners(20);
         }
 
         // If not enabled, return graph without communities and empty stats
@@ -207,6 +217,12 @@ export default function App() {
 
     // Community stats are now derived directly from graphWithCommunities
     const currentCommunityStats = graphWithCommunities.stats;
+
+    // Detect Hub and Bridge nodes for the selected community
+    const specialNodes = useMemo(() => {
+        if (!showCommunities || selectedCommunity === null || !graph) return { hub: null, bridge: null };
+        return getCommunityCentrality(graph, selectedCommunity);
+    }, [graph, showCommunities, selectedCommunity]);
 
 
     return (
@@ -457,6 +473,7 @@ export default function App() {
                                         focusedEdge={focusedEdge}
                                         selectedCommunity={selectedCommunity}
                                         communityStats={currentCommunityStats}
+                                        specialNodes={specialNodes}
                                         onNodeClick={(node) => {
                                             setFocusedNode(node);
                                             setFocusedEdge(null);

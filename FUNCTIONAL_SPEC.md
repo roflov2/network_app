@@ -55,6 +55,7 @@ The system utilizes a **Client-First Intelligence** architecture. A lightweight 
 | Rendering | **Sigma.js** | WebGL graph visualization |
 | Layout | **ForceAtlas2** | **Hybrid Strategy:** Pre-calculated (100 iters) + Continuous (Worker) |
 | Clustering | **Louvain** | `graphology-communities-louvain` |
+| Centrality | **In-Browser** | `graphology-metrics` (Betweenness, Degree) |
 | Search | **Fuse.js** | Fuzzy client-side search |
 | Charts | Recharts | Timeline visualization |
 | Styling | Tailwind CSS | UI components & layout |
@@ -149,6 +150,24 @@ The application implements a "Focus & Context" interface.
     3.  `ForceAtlas2` layout adjusts to pull connected communities tighter.
 -   **Sidebar:** Displays a list of communities, sorted by size (node count).
     -   *Action:* Clicking a community in the list highlights all its members.
+    -   *Logic:*
+        -   Shows node count for each community.
+        -   Highlights valid community members in the graph.
+
+### 5.3 Community Centrality Analysis
+**Purpose:** Identify influential nodes within a selected community.
+-   **Trigger:** Selection of a community via the sidebar.
+-   **Analysis Scope:** Metrics are calculated **locally** on the subgraph of the selected community, not the global graph.
+-   **Identified Roles:**
+    1.  **Hub (Degree Centrality):** The node with the most connections within the community.
+        -   *Representation:* **Amber Star Avatar** (Icon).
+        -   *Visual:* Large size, Top Z-Index.
+    2.  **Bridge (Betweenness Centrality):** The node that acts as the primary connector/pathway within the cluster.
+        -   *Representation:* **Purple Path/Link Avatar** (Icon).
+        -   *Visual:* Large size, Top Z-Index.
+-   **Behavior:**
+    -   These avatars replace the standard node circle when a community is highlighted.
+    -   They provide instant visual cues for key entities without manual analysis.
 
 ### 5.3 Data Tables (Interactive)
 
