@@ -37,7 +37,6 @@ export default function App() {
     const [isDocumentsCollapsed, setIsDocumentsCollapsed] = useState(false);
     const [showCommunities, setShowCommunities] = useState(false); // Community detection toggle
     const [selectedCommunity, setSelectedCommunity] = useState(null); // Selected community for isolation
-    const [communityStats, setCommunityStats] = useState({}); // Community statistics
     const [viewAllData, setViewAllData] = useState(false); // Toggle to show all data vs filtered
     const [isHelpOpen, setIsHelpOpen] = useState(false);
 
@@ -138,28 +137,42 @@ export default function App() {
         setPathGraph(pathSub);
     };
 
-    // Determine what to display: Path, Focus (2-hop), or Full Graph with Type Filtering
-    // Determine what to display: Path, Focus (2-hop), or Full Graph with Type Filtering
-    // Memoized to prevent physics restarts on unrelated UI changes (like sidebar resize)
+    // -----------------------------------------------------------------------
+    // GRAPH PROCESSING PIPELINE
+    // -----------------------------------------------------------------------
+
+    // 1. Base Transformation: Focus Neighborhood + Type Filter + Community Detection
+    // This is the "Single Source of Truth" for the graph structure and stats.
+    const graphWithCommunities = useMemo(() => {
+        if (!graph) return { graph: null, stats: {} };
+
+        let processed = graph;
+
+        // 1. Focus (2-hop)
+        if (focusedNode && graph.hasNode(focusedNode)) {
+            processed = get2HopNeighborhood(graph, focusedNode);
+        }
+
+        // 2. Type Filter
+        processed = filterGraphByTypes(processed, selectedTypes, focusedNode);
+
+        // 3. Community Detection (if enabled)
+        if (showCommunities) {
+            // detectCommunities returns { graph, stats }
+            return detectCommunities(processed);
+        }
+
+        // If not enabled, return graph without communities and empty stats
+        return { graph: processed, stats: {} };
+    }, [graph, focusedNode, selectedTypes, showCommunities]);
+
+    // 2. Visual Transformation: Collapse Documents + Grey Out (Selection)
+    // This depends on the Base Transformation but adds visual-only changes.
     const displayedGraph = useMemo(() => {
         if (pathGraph) return pathGraph;
-        if (!graph) return null;
+        if (!graphWithCommunities.graph) return null;
 
-        let displayGraph = graph;
-
-        // If node is focused, show 2-hop neighborhood
-        if (focusedNode && graph.hasNode(focusedNode)) {
-            displayGraph = get2HopNeighborhood(graph, focusedNode);
-        }
-
-        // Apply type filtering (preserves focused node and its neighbors)
-        displayGraph = filterGraphByTypes(displayGraph, selectedTypes, focusedNode);
-
-        // Apply community detection if enabled
-        if (showCommunities) {
-            const result = detectCommunities(displayGraph);
-            displayGraph = result.graph;
-        }
+        let displayGraph = graphWithCommunities.graph;
 
         // Apply document collapse if enabled
         if (isDocumentsCollapsed) {
@@ -172,14 +185,13 @@ export default function App() {
         }
 
         return displayGraph;
-    }, [graph, pathGraph, focusedNode, selectedTypes, showCommunities, isDocumentsCollapsed, selectedCommunity]);
+    }, [graphWithCommunities, pathGraph, isDocumentsCollapsed, selectedCommunity, showCommunities]);
 
-    // Derive the graph data specifically for the table
-    // If a community is selected, we want the table to STRICTLY filter to that community
-    // whereas the visual graph just greys out the non-community nodes.
+    // 3. Table Data: Strict Filtering
     const tableGraph = useMemo(() => {
         if (viewAllData) return graph;
 
+        // Use the displayed graph (visual state) as base, but enforce strict filtering
         let tGraph = displayedGraph;
 
         // Apply strict community filtering for the table if a community is selected
@@ -192,25 +204,9 @@ export default function App() {
 
 
 
-    // Calculate community stats separately to avoid infinite render loop
-    useEffect(() => {
-        if (!showCommunities || !graph) {
-            setCommunityStats({});
-            return;
-        }
 
-        // Get the base graph to analyze
-        let analyzeGraph = graph;
-
-        if (focusedNode && graph.hasNode(focusedNode)) {
-            analyzeGraph = get2HopNeighborhood(graph, focusedNode);
-        }
-
-        analyzeGraph = filterGraphByTypes(analyzeGraph, selectedTypes, focusedNode);
-
-        const result = detectCommunities(analyzeGraph);
-        setCommunityStats(result.stats);
-    }, [showCommunities, graph, focusedNode, selectedTypes]);
+    // Community stats are now derived directly from graphWithCommunities
+    const currentCommunityStats = graphWithCommunities.stats;
 
 
     return (
@@ -432,7 +428,7 @@ export default function App() {
                     {graph && (
                         showCommunities ? (
                             <CommunityPanel
-                                communities={communityStats}
+                                communities={currentCommunityStats}
                                 selectedCommunityId={selectedCommunity}
                                 onCommunityClick={(communityId) => {
                                     setSelectedCommunity(selectedCommunity === communityId ? null : communityId);
@@ -460,7 +456,7 @@ export default function App() {
                                         focusedNode={focusedNode}
                                         focusedEdge={focusedEdge}
                                         selectedCommunity={selectedCommunity}
-                                        communityStats={communityStats}
+                                        communityStats={currentCommunityStats}
                                         onNodeClick={(node) => {
                                             setFocusedNode(node);
                                             setFocusedEdge(null);
