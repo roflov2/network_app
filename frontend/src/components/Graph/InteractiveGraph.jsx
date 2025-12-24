@@ -14,6 +14,9 @@ import { get2HopNeighborhood } from "../../utils/graph-logic";
 const BRIDGE_ICON = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEwIDEzYTVlNSA1IDAgMCAwIDcuNTQgLjU0bDMsM2E1IDUgMCAwIDAgNy4wNy03LjA3bC0xLjcyLTEuNzEiLz48cGF0aCBkPSJNMTQgMTFhNSA1IDAgMCAwLTcuNTQtLjU0bC0zLTNhNSA1IDAgMCAwLTcuMDcgNy4wN2wxLjcyIDEuNzEiLz48L3N2Zz4=";
 // Hub: A target/star icon
 const HUB_ICON = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSI2Ii8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMiIvPjwvc3ZnPg==";
+// Dual: Hub + Bridge (Star inside a Circle/Link context)
+// Using a Crown or Badge icon to represent "King" of the community
+const DUAL_ICON = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0ibTIgNCAzIDEyaDE0bDMtMTItNiA3LTIuNS0yLjUtMi41IDIuNS02LTd6Ii8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxOSIgcj0iMiIvPjwvc3ZnPg==";
 
 export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, onNodeClick, onEdgeClick, selectedCommunity, communityStats, specialNodes }) {
     const containerRef = useRef(null);
@@ -225,18 +228,24 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
                 // CENTRALITY AVATARS (Bridge & Hub)
                 // Only apply if we have special nodes identified for the selected community
                 if (specialNodes) {
-                    if (node === specialNodes.hub) {
+                    if (specialNodes.hub && specialNodes.bridge && specialNodes.hub === specialNodes.bridge && node === specialNodes.hub) {
+                        res.type = "image";
+                        res.image = DUAL_ICON;
+                        res.color = "#EC4899"; // Pink for Dual Role
+                        res.size = (data.size || 5) * 2.0; // Biggest
+                        res.zIndex = 30;
+                    } else if (node === specialNodes.hub) {
                         res.type = "image";
                         res.image = HUB_ICON;
                         res.color = "#F59E0B"; // Amber for Hub
-                        res.size = (data.size || 5) * 1.8; // Make it prominent
-                        res.zIndex = 20; // Top z-index
+                        res.size = (data.size || 5) * 1.8;
+                        res.zIndex = 20;
                     } else if (node === specialNodes.bridge) {
                         res.type = "image";
                         res.image = BRIDGE_ICON;
                         res.color = "#8B5CF6"; // Purple for Bridge
-                        res.size = (data.size || 5) * 1.8; // Make it prominent
-                        res.zIndex = 20; // Top z-index
+                        res.size = (data.size || 5) * 1.8;
+                        res.zIndex = 20;
                     }
                 }
 
