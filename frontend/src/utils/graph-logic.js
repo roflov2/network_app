@@ -188,23 +188,42 @@ export function getCommunityCentrality(graph, communityId) {
     }
 
     // 3. Calculate Betweenness Centrality (Bridge)
-    // Betweenness is expensive, but community subgraphs are usually small enough.
-    // Who acts as a bridge/connector within the community?
     const betweennessScores = betweenness(communityGraph);
-    let maxBetweenness = -1;
-    let bridgeNode = null;
 
+    let bestBridge = null;
+    let maxBetweenness = -1;
+
+    // First pass: Find absolute best bridge
     for (const [node, score] of Object.entries(betweennessScores)) {
-        // Exclude the hub from being the bridge if possible, to show two different interesting nodes
-        // unless it's overwhelmingly the bridge too.
         if (score > maxBetweenness) {
             maxBetweenness = score;
-            bridgeNode = node;
+            bestBridge = node;
         }
     }
 
-    // Fallback: If bridge is same as hub, try to find second best bridge?
-    // For now, allow them to be the same if one node dominates everything.
+    // Refinement: Try to find a distinct bridge if the best one is also the hub
+    let bridgeNode = bestBridge;
+
+    if (bestBridge === hubNode) {
+        let secondBestBetweenness = -1;
+        let secondBestBridge = null;
+
+        for (const [node, score] of Object.entries(betweennessScores)) {
+            // Must be distinct from Hub
+            if (node !== hubNode) {
+                if (score > secondBestBetweenness) {
+                    secondBestBetweenness = score;
+                    secondBestBridge = node;
+                }
+            }
+        }
+
+        // If we found a valid second option (that actually acts as a bridge), use it.
+        // We might want a threshold, e.g., at least 50% of the max score, but for now, distinctness is key.
+        if (secondBestBridge && secondBestBetweenness > 0) {
+            bridgeNode = secondBestBridge;
+        }
+    }
 
     return { hub: hubNode, bridge: bridgeNode };
 }
