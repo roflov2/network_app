@@ -225,6 +225,8 @@ export function getCommunityCentrality(graph, communityId) {
         }
     }
 
+    console.log(`[Centrality Debug] Comm: ${communityId} (${communityGraph.order} nodes) -> Hub: ${hubNode} (${maxDegree}), Bridge: ${bridgeNode} (${maxBetweenness})`);
+
     return { hub: hubNode, bridge: bridgeNode };
 }
 
