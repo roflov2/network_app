@@ -45,9 +45,8 @@ export default function App() {
         setLoading(true);
         try {
             // Fetch from backend or static file based on environment
-            const res = await (import.meta.env.PROD
-                ? fetch(import.meta.env.BASE_URL + 'demo-data.json')
-                : fetch('/api/load-demo', { method: 'POST' }));
+            // Force load static demo data for testing (using correct base path)
+            const res = await fetch(import.meta.env.BASE_URL + 'demo-data.json');
             if (!res.ok) throw new Error("Failed to load demo data");
             const data = await res.json();
             const rawGraph = processGraphData(data.graph);
