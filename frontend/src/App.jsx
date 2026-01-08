@@ -159,7 +159,8 @@ export default function App() {
         // 3. Community Detection (if enabled)
         if (showCommunities) {
             // detectCommunities returns { graph, stats }
-            const result = detectCommunities(processed);
+            // Pass false to runClustering to preserve global community IDs
+            const result = detectCommunities(processed, false);
             // Increase listeners to suppress warning (Sigma + Layout + Internal events)
             if (result.graph && result.graph.setMaxListeners) {
                 result.graph.setMaxListeners(20);

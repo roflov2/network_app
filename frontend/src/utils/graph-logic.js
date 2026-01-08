@@ -63,14 +63,16 @@ export function processGraphData(data) {
 }
 
 // Apply community detection and recolor nodes by community
-export function detectCommunities(graph) {
+export function detectCommunities(graph, runClustering = true) {
     if (!graph) return { graph, stats: {} };
 
     // Create a copy to avoid mutating the original
     const communityGraph = graph.copy();
 
-    // Run Louvain community detection
-    louvain.assign(communityGraph);
+    // Run Louvain community detection ONLY if requested
+    if (runClustering) {
+        louvain.assign(communityGraph);
+    }
 
     // Calculate community statistics
     const communityStats = {};
