@@ -39,6 +39,7 @@ export default function App() {
     const [selectedCommunity, setSelectedCommunity] = useState(null); // Selected community for isolation
     const [viewAllData, setViewAllData] = useState(false); // Toggle to show all data vs filtered
     const [isHelpOpen, setIsHelpOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const handleDemoLoad = async () => {
         setLoading(true);
@@ -436,7 +437,7 @@ export default function App() {
 
                 {/* Graph Area */}
                 <div className="flex-1 bg-zinc-100 dark:bg-zinc-950 relative overflow-hidden">
-                    {graph && <SearchUI graph={graph} onSelectNode={(nodeId) => {
+                    {graph && isSearchOpen && <SearchUI graph={graph} onSelectNode={(nodeId) => {
                         setFocusedNode(nodeId);
                         setPathGraph(null); // Clear path mode on new search
                     }} />}
@@ -532,6 +533,8 @@ export default function App() {
                 }}
                 showCommunities={showCommunities}
                 hasPath={!!pathGraph}
+                isSearchOpen={isSearchOpen}
+                onToggleSearch={() => setIsSearchOpen(!isSearchOpen)}
             />
 
             {/* Help Modal */}

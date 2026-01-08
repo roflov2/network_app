@@ -1,5 +1,5 @@
 import React from 'react';
-import { Upload, Navigation, HelpCircle, Menu, X, FolderOpen, Users } from 'lucide-react';
+import { Upload, Navigation, HelpCircle, Menu, X, FolderOpen, Users, Search } from 'lucide-react';
 
 export default function FloatingControls({
     onUpload,
@@ -9,7 +9,9 @@ export default function FloatingControls({
     onOpenHelp,
     onToggleCommunities,
     showCommunities,
-    hasPath
+    hasPath,
+    onToggleSearch,
+    isSearchOpen
 }) {
     const btnClass = "p-3 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-full shadow-lg border border-zinc-200 dark:border-zinc-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center relative group";
 
@@ -18,6 +20,18 @@ export default function FloatingControls({
 
     return (
         <div className="absolute top-4 right-4 flex flex-col gap-3 z-30 pointer-events-auto">
+            {/* Search Toggle */}
+            <button
+                onClick={onToggleSearch}
+                className={`${btnClass} ${isSearchOpen ? activeClass : ''}`}
+                title="Search Nodes"
+            >
+                {isSearchOpen ? <X size={20} /> : <Search size={20} />}
+                <span className="absolute right-full mr-2 px-2 py-1 bg-zinc-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    {isSearchOpen ? "Close Search" : "Search Nodes"}
+                </span>
+            </button>
+
             {/* Upload (Primary Action) */}
             <button onClick={onUpload} className={btnClass} title="Upload Data">
                 <FolderOpen size={20} />
