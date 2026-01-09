@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Users, X, ChevronUp, ChevronDown, Info } from 'lucide-react';
+// Icons for Centrality Avatars (SVG Data URIs)
+const BRIDGE_ICON = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEwIDEzYTVlNSA1IDAgMCAwIDcuNTQgLjU0bDMsM2E1IDUgMCAwIDAgNy4wNy03LjA3bC0xLjcyLTEuNzEiLz48cGF0aCBkPSJNMTQgMTFhNSA1IDAgMCAwLTcuNTQtLjU0bC0zLTNhNSA1IDAgMCAwLTcuMDcgNy4wN2wxLjcyIDEuNzEiLz48L3N2Zz4=";
+const HUB_ICON = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSI2Ii8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMiIvPjwvc3ZnPg==";
 
 export default function CommunityPanel({
     communities,
@@ -72,21 +75,25 @@ export default function CommunityPanel({
                         <div>
                             <h4 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Togetherness Measures</h4>
                             <div className="grid grid-cols-1 gap-3">
-                                <div className="border border-zinc-200 dark:border-zinc-700 p-3 rounded-md">
+                                <div className="border border-amber-200 dark:border-amber-900/30 bg-amber-50 dark:bg-amber-900/10 p-3 rounded-md">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                                        <span className="font-medium text-zinc-900 dark:text-zinc-100">Hub (Degree Centrality)</span>
+                                        <div className="w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center shrink-0">
+                                            <img src={HUB_ICON} alt="Hub" className="w-4 h-4" />
+                                        </div>
+                                        <span className="font-medium text-amber-900 dark:text-amber-100">Hub (Degree Centrality)</span>
                                     </div>
-                                    <p className="text-xs">
+                                    <p className="text-xs text-amber-800 dark:text-amber-200/80">
                                         The most connected node <em>within</em> the community. Think of it as the "leader" or "center" of the group.
                                     </p>
                                 </div>
-                                <div className="border border-zinc-200 dark:border-zinc-700 p-3 rounded-md">
+                                <div className="border border-violet-200 dark:border-violet-900/30 bg-violet-50 dark:bg-violet-900/10 p-3 rounded-md">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                        <span className="font-medium text-zinc-900 dark:text-zinc-100">Bridge (Betweenness Centrality)</span>
+                                        <div className="w-6 h-6 rounded-full bg-violet-500 flex items-center justify-center shrink-0">
+                                            <img src={BRIDGE_ICON} alt="Bridge" className="w-4 h-4" />
+                                        </div>
+                                        <span className="font-medium text-violet-900 dark:text-violet-100">Bridge (Betweenness Centrality)</span>
                                     </div>
-                                    <p className="text-xs">
+                                    <p className="text-xs text-violet-800 dark:text-violet-200/80">
                                         A node that acts as a connector to <em>other</em> communities. It holds the network together by linking different groups.
                                     </p>
                                 </div>
