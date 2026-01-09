@@ -484,6 +484,26 @@ App.jsx
 - Instant response to node clicks
 - Smooth transitions and animations
 
+### 7.4 Design System (Enterprise Retro)
+
+**Theme:** "Enterprise Retro" - A clean, high-contrast aesthetic blending vintage terminal vibes with modern usability.
+
+**Typography:**
+*   **Headings & Brand:** `Press Start 2P` (Google Fonts)
+    *   Used for: Main Logo (`NetworkExplorerLogo`), Modal Headers, Section Titles.
+    *   Styling: Uppercase, tracking-widest, two-tone colors (Dark Slate + Purple).
+*   **UI & Data:** `JetBrains Mono` (Google Fonts)
+    *   Used for: Search Input, Dropdowns, Body Text, Tables, Graph Labels, Forms.
+    *   Styling: Clean monospace, high readability.
+
+**Component Styling:**
+*   **Modals:** Rounded corners (`rounded-xl`), clean white/dark backgrounds, retro headers.
+*   **Dropdowns (Custom):** 
+    *   Replaced native `<datalist>` with custom `NodeSelect` components to enforce `JetBrains Mono`.
+    *   Features: Searchable, floating z-index (overflow allowed), hover effects.
+*   **Buttons:** `PixelButton` component with crisp borders and hover states.
+*   **Search Overlay:** Floating panel with monospace type and consistent styling.
+
 ---
 
 ## 8. Deployment
