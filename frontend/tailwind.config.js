@@ -4,6 +4,11 @@ export default {
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
+    safelist: [
+        'text-retro-logo-purple',
+        'font-logo',
+        'font-brand'
+    ],
     theme: {
         extend: {
             colors: {
@@ -13,6 +18,7 @@ export default {
                     border: '#1e293b',   // Slate-800
                     muted: '#64748b',    // Slate-500
                     primary: '#2563eb',  // Royal Blue
+                    'logo-purple': '#6252F8', // Custom Purple for Logo
                 }
             },
             boxShadow: {
@@ -21,7 +27,8 @@ export default {
             },
             fontFamily: {
                 brand: ['"Silkscreen"', 'cursive'],
-                mono: ['"JetBrains Mono"', '"Space Mono"', 'monospace'],
+                logo: ['"Press Start 2P"', 'cursive'],
+                mono: ['"JetBrains Mono"', '"Space Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
                 sans: ['"Inter"', 'sans-serif'],
             },
             borderRadius: {

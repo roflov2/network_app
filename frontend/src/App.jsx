@@ -19,6 +19,7 @@ import FloatingControls from './components/UI/FloatingControls';
 import HelpModal from './components/UI/HelpModal';
 import StatBox from './components/ui/StatBox';
 import PixelButton from './components/ui/PixelButton';
+import NetworkExplorerLogo from './components/NetworkExplorerLogo';
 
 export default function App() {
     const [graph, setGraph] = useState(null);
@@ -242,8 +243,9 @@ export default function App() {
                     {/* Top Section: Controls + Stats (Flex 1) */}
                     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
                         <div className="p-4 space-y-4 overflow-y-auto">
+
                             <div className="flex items-center justify-between mb-2">
-                                <h1 className="font-brand text-2xl tracking-tighter text-retro-primary">NETWORK<br />EXPLORER</h1>
+                                <NetworkExplorerLogo />
                                 <button onClick={() => setSidebarOpen(false)} className="lg:hidden">
                                     <X size={20} />
                                 </button>

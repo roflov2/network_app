@@ -2,17 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Silkscreen&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap');
+
+/* Force Rebuild */
 
 :root {
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  
+
   color-scheme: light;
   /* Retro Theme Variables */
   --retro-paper: #f8fafc;
   --retro-border: #1e293b;
+  --retro-logo-purple: #6252F8;
+}
+
+.logo-font {
+  font-family: 'Press Start 2P', cursive;
+}
+
+.logo-color-primary {
+  color: var(--retro-border);
+}
+
+.logo-color-secondary {
+  color: var(--retro-logo-purple);
 }
 
 body {
@@ -21,7 +35,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  
+
   /* Retro Base Styles */
   background-color: var(--retro-paper);
   color: var(--retro-border);

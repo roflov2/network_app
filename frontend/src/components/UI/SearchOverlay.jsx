@@ -75,7 +75,7 @@ export function SearchUI({ onSelectNode, graph }) {
                     value={query}
                     onChange={handleSearch}
                     placeholder="Search nodes..."
-                    className="block w-full pl-10 pr-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md leading-5 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm shadow-md"
+                    className="block w-full pl-10 pr-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md leading-5 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm shadow-md font-mono"
                 />
             </div>
 
@@ -87,8 +87,8 @@ export function SearchUI({ onSelectNode, graph }) {
                             onClick={() => handleSelect(match.item)}
                             className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100"
                         >
-                            <span className="block truncate font-medium">{match.item.label || match.item.id}</span>
-                            <span className="block truncate text-xs text-zinc-500">{match.item.type}</span>
+                            <span className="block truncate font-medium font-mono">{match.item.label || match.item.id}</span>
+                            <span className="block truncate text-xs text-zinc-500 font-mono">{match.item.type}</span>
                         </li>
                     ))}
                 </ul>

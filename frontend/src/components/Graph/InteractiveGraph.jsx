@@ -52,6 +52,7 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
             renderLabels: true,
             renderEdgeLabels: false,              // Edge labels are expensive
             labelWeight: "bold",
+            labelFont: "'JetBrains Mono', monospace",
             allowInvalidContainer: true,
 
             // **Efficient Programs**
