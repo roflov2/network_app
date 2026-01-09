@@ -18,6 +18,8 @@ export default function CommunityPanel({
     const sortedCommunities = Object.entries(communities)
         .sort(([, a], [, b]) => b.count - a.count);
 
+    // Bottom variant uses local expanded state
+    const [isExpanded, setIsExpanded] = useState(false);
     // Info modal state
     const [showInfo, setShowInfo] = useState(false);
 
