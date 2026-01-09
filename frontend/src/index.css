@@ -2,14 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Silkscreen&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap');
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: light;
+  /* Retro Theme Variables */
+  --retro-paper: #f8fafc;
+  --retro-border: #1e293b;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  
+  /* Retro Base Styles */
+  background-color: var(--retro-paper);
+  color: var(--retro-border);
+  image-rendering: pixelated;
 }
 
 body {

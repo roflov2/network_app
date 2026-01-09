@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Calendar, ChevronUp, ChevronDown } from 'lucide-react';
+import PixelButton from '../UI/PixelButton';
 
 export default function Timeline({ graph, sidebarOpen, sidebarWidth }) {
     const [granularity, setGranularity] = useState('year'); // 'year' | 'month'
@@ -101,95 +102,102 @@ export default function Timeline({ graph, sidebarOpen, sidebarWidth }) {
     return (
         <div
             style={{ left: sidebarOpen ? sidebarWidth : 0 }}
-            className={`absolute bottom-0 right-0 z-20 bg-white/95 dark:bg-zinc-900/95 border-t border-zinc-200 dark:border-zinc-700 transition-all duration-300 ease-in-out ${isExpanded ? 'h-64' : 'h-8'}`}
+            className={`absolute bottom-0 right-0 z-20 bg-white border-t-2 border-retro-border shadow-pro transition-all duration-300 ease-in-out ${isExpanded ? 'h-64' : 'h-10'}`}
         >
             {isExpanded ? (
                 <>
                     {/* Expanded Header */}
-                    <div className="flex items-center justify-between px-4 h-12 bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
+                    <div className="flex items-center justify-between px-4 h-12 bg-slate-50 border-b-2 border-retro-border">
                         <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+                            <div className="flex items-center gap-2 text-sm font-brand tracking-wide text-retro-primary uppercase">
                                 <Calendar size={16} />
                                 <span>Temporal Distribution</span>
                             </div>
 
                             {/* Granularity Switcher */}
-                            <div className="flex bg-zinc-200 dark:bg-zinc-700 rounded-md p-1">
-                                <button
+                            <div className="flex gap-2">
+                                <PixelButton
                                     onClick={() => setGranularity('year')}
-                                    className={`px-3 py-1 text-xs font-medium rounded ${granularity === 'year' ? 'bg-white dark:bg-zinc-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
+                                    active={granularity === 'year'}
+                                    size="sm"
+                                    className="!text-[10px] !px-2 !py-1"
                                 >
-                                    Year (Annual)
-                                </button>
-                                <button
+                                    Year
+                                </PixelButton>
+                                <PixelButton
                                     onClick={() => setGranularity('month')}
-                                    className={`px-3 py-1 text-xs font-medium rounded ${granularity === 'month' ? 'bg-white dark:bg-zinc-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
+                                    active={granularity === 'month'}
+                                    size="sm"
+                                    className="!text-[10px] !px-2 !py-1"
                                 >
-                                    Month (Detailed)
-                                </button>
+                                    Month
+                                </PixelButton>
                             </div>
                         </div>
 
-                        <button
+                        <PixelButton
                             onClick={() => setIsExpanded(false)}
-                            className="p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded transition-colors"
+                            size="sm"
+                            className="!p-1"
                             title="Collapse"
                         >
-                            <ChevronDown size={20} />
-                        </button>
+                            <ChevronDown size={14} />
+                        </PixelButton>
                     </div>
                 </>
             ) : (
                 /* Collapsed Handle */
                 <button
                     onClick={() => setIsExpanded(true)}
-                    className="w-full h-full flex items-center justify-between px-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                    className="w-full h-full flex items-center justify-between px-4 hover:bg-slate-50 transition-colors cursor-pointer"
                     title="Expand Temporal Distribution"
                 >
-                    <div className="flex items-center gap-2 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                    <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-retro-border">
                         <Calendar size={14} />
                         <span>Temporal Distribution</span>
                     </div>
-                    <ChevronUp size={16} className="text-zinc-400" />
+                    <ChevronUp size={16} className="text-retro-muted" />
                 </button>
             )}
 
             {/* Chart Area */}
             {isExpanded && (
-                <div className="w-full h-[calc(100%-3rem)] p-4">
+                <div className="w-full h-[calc(100%-3rem)] p-4 bg-white">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={timelineData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                            <CartesianGrid stroke="#e2e8f0" vertical={false} strokeDasharray="0" />
                             <XAxis
                                 dataKey="name"
-                                tick={{ fontSize: 11, fill: '#6B7280' }}
+                                tick={{ fontSize: 10, fill: '#64748b', fontFamily: 'JetBrains Mono' }}
                                 tickLine={false}
-                                axisLine={false}
+                                axisLine={{ stroke: '#e2e8f0' }}
                                 minTickGap={30}
                             />
                             <YAxis
-                                tick={{ fontSize: 11, fill: '#6B7280' }}
+                                tick={{ fontSize: 10, fill: '#64748b', fontFamily: 'JetBrains Mono' }}
                                 tickLine={false}
                                 axisLine={false}
                                 allowDecimals={false}
                             />
                             <Tooltip
-                                cursor={{ stroke: '#3B82F6', strokeWidth: 2 }}
+                                cursor={{ stroke: '#2563eb', strokeWidth: 1, strokeDasharray: '4 4' }}
                                 contentStyle={{
-                                    borderRadius: '8px',
-                                    border: 'none',
-                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                    borderRadius: '0px',
+                                    border: '2px solid #1e293b',
+                                    boxShadow: '4px 4px 0px 0px #1e293b',
+                                    backgroundColor: '#ffffff',
+                                    fontFamily: 'JetBrains Mono',
+                                    fontSize: '12px',
                                     padding: '8px 12px'
                                 }}
                             />
                             <Line
-                                type="monotone"
+                                type="step"
                                 dataKey="count"
-                                stroke="#3B82F6"
+                                stroke="#2563eb"
                                 strokeWidth={2}
-                                dot={granularity === 'year' ? { r: 4, fill: '#3B82F6', strokeWidth: 2 } : false}
-                                activeDot={{ r: 6, fill: '#3B82F6' }}
+                                dot={{ fill: '#fff', stroke: '#2563eb', strokeWidth: 2, r: 3 }}
+                                activeDot={{ r: 5, fill: '#2563eb', stroke: '#1e293b', strokeWidth: 2 }}
                                 animationDuration={500}
                             />
                         </LineChart>

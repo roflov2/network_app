@@ -5,7 +5,36 @@ export default {
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                retro: {
+                    paper: '#f8fafc',    // Slate-50
+                    surface: '#ffffff',  // White
+                    border: '#1e293b',   // Slate-800
+                    muted: '#64748b',    // Slate-500
+                    primary: '#2563eb',  // Royal Blue
+                }
+            },
+            boxShadow: {
+                'pro': '2px 2px 0px 0px rgba(30, 41, 59, 1)',
+                'pro-sm': '1px 1px 0px 0px rgba(30, 41, 59, 1)',
+            },
+            fontFamily: {
+                brand: ['"Silkscreen"', 'cursive'],
+                mono: ['"JetBrains Mono"', '"Space Mono"', 'monospace'],
+                sans: ['"Inter"', 'sans-serif'],
+            },
+            borderRadius: {
+                DEFAULT: '0px',
+                'none': '0px',
+                'sm': '0px',
+                'md': '0px',
+                'lg': '0px',
+                'xl': '0px',
+                '2xl': '0px',
+                'full': '9999px', // Keep full for circles if strictly needed, but mostly 0
+            }
+        },
     },
     plugins: [],
 }

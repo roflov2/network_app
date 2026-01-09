@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Download, Eye, EyeOff } from 'lucide-react';
+import { Download, Eye, EyeOff, Search } from 'lucide-react';
+import RetroTable from './RetroTable';
+import PixelButton from './PixelButton';
 
 // CSV export utility
 function exportToCSV(data, filename) {
@@ -72,118 +74,92 @@ export default function DataTable({ graph, fullGraph, viewAllData, onToggleViewA
 
     if (!graph) return null;
 
-    const showViewAllToggle = fullGraph && !viewAllData; // Only show when not already viewing all
+    // Define columns for RetroTable
+    const columns = activeTab === 'nodes'
+        ? [
+            { header: 'ID', accessor: 'id' },
+            { header: 'Label', accessor: 'label' },
+            { header: 'Type', accessor: 'type' }
+        ]
+        : [
+            { header: 'Source', accessor: 'source' },
+            { header: 'Target', accessor: 'target' },
+            { header: 'Type', accessor: 'type' }
+        ];
 
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-zinc-800 border-t border-zinc-200 dark:border-zinc-700">
+        <div className="flex flex-col h-full bg-retro-paper border-t-2 border-retro-border">
             {/* Toolbar */}
-            <div className="flex items-center justify-between p-2 sticky top-0 bg-white dark:bg-zinc-800 z-10 border-b border-zinc-100 dark:border-zinc-700 gap-2">
-                <div className="flex space-x-1 bg-zinc-100 dark:bg-zinc-700 p-1 rounded">
-                    <button
+            <div className="flex items-center justify-between p-2 sticky top-0 bg-retro-paper z-10 border-b border-zinc-200 gap-2">
+                <div className="flex gap-2">
+                    <PixelButton
                         onClick={() => setActiveTab('nodes')}
-                        className={`px-3 py-1 text-xs font-medium rounded ${activeTab === 'nodes' ? 'bg-white dark:bg-zinc-600 shadow text-blue-600 dark:text-blue-400' : 'text-zinc-500 hover:text-zinc-800'}`}
+                        active={activeTab === 'nodes'}
+                        size="sm"
+                        className="!text-[10px] !px-2 !py-1"
                     >
                         Nodes ({data.nodes.length})
-                    </button>
-                    <button
+                    </PixelButton>
+                    <PixelButton
                         onClick={() => setActiveTab('edges')}
-                        className={`px-3 py-1 text-xs font-medium rounded ${activeTab === 'edges' ? 'bg-white dark:bg-zinc-600 shadow text-blue-600 dark:text-blue-400' : 'text-zinc-500 hover:text-zinc-800'}`}
+                        active={activeTab === 'edges'}
+                        size="sm"
+                        className="!text-[10px] !px-2 !py-1"
                     >
                         Edges ({data.edges.length})
-                    </button>
+                    </PixelButton>
                 </div>
 
                 <div className="flex items-center gap-2">
                     {/* View All Toggle */}
                     {onToggleViewAll && (
-                        <button
+                        <PixelButton
                             onClick={onToggleViewAll}
-                            className="flex items-center gap-1 px-2 py-1 text-xs border border-zinc-300 dark:border-zinc-600 rounded hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+                            active={viewAllData}
+                            size="sm"
+                            className="!text-[10px] !px-2 !py-1 flex items-center gap-1"
                             title={viewAllData ? "Show filtered data" : "View all data"}
                         >
-                            {viewAllData ? <EyeOff size={14} /> : <Eye size={14} />}
-                            <span>{viewAllData ? 'Filtered' : 'All Data'}</span>
-                        </button>
+                            {viewAllData ? <EyeOff size={12} /> : <Eye size={12} />}
+                            <span className="hidden sm:inline">{viewAllData ? 'Filtered' : 'All Data'}</span>
+                        </PixelButton>
                     )}
 
                     {/* CSV Export */}
-                    <button
+                    <PixelButton
                         onClick={handleExport}
-                        className="flex items-center gap-1 px-2 py-1 text-xs border border-zinc-300 dark:border-zinc-600 rounded hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+                        size="sm"
+                        className="!text-[10px] !px-2 !py-1 flex items-center gap-1"
                         title="Download as CSV"
                     >
-                        <Download size={14} />
-                        <span>CSV</span>
-                    </button>
+                        <Download size={12} />
+                        <span className="hidden sm:inline">CSV</span>
+                    </PixelButton>
 
                     {/* Search */}
-                    <input
-                        type="text"
-                        placeholder="Filter..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-24 px-2 py-1 text-xs border border-zinc-200 dark:border-zinc-600 rounded bg-transparent dark:text-zinc-200"
-                    />
+                    <div className="relative flex items-center">
+                        <input
+                            type="text"
+                            placeholder="Filter..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-32 px-2 py-1 pl-7 text-xs font-mono bg-retro-surface border border-retro-border focus:outline-none focus:ring-0 placeholder-retro-muted text-retro-border shadow-pro-sm"
+                        />
+                        <Search size={12} className="absolute left-2 text-retro-muted" />
+                    </div>
                 </div>
             </div>
 
             {/* Table Content */}
-            <div className="flex-1 overflow-auto">
-                <table className="w-full text-left text-xs">
-                    <thead className="sticky top-0 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700 text-zinc-500 font-semibold uppercase">
-                        {activeTab === 'nodes' ? (
-                            <tr>
-                                <th className="px-3 py-2">ID</th>
-                                <th className="px-3 py-2">Label</th>
-                                <th className="px-3 py-2">Type</th>
-                            </tr>
-                        ) : (
-                            <tr>
-                                <th className="px-3 py-2">Source</th>
-                                <th className="px-3 py-2">Target</th>
-                                <th className="px-3 py-2">Type</th>
-                            </tr>
-                        )}
-                    </thead>
-                    <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                        {filteredData.map((item, idx) => {
-                            const isSelected = activeTab === 'nodes'
-                                ? item.id === focusedNode
-                                : item.id === focusedEdge;
-
-                            return (
-                                <tr
-                                    key={item.id || idx}
-                                    onClick={() => onSelection && onSelection(item, activeTab)}
-                                    className={`
-                                        hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors cursor-pointer
-                                        ${isSelected ? 'bg-blue-100 dark:bg-blue-900/30 border-l-4' : ''}
-                                    `}
-                                    style={isSelected ? { borderLeftColor: '#0F52BA' } : {}}
-                                >
-                                    {activeTab === 'nodes' ? (
-                                        <>
-                                            <td className="px-3 py-1.5 truncate max-w-[80px]" title={item.id}>{item.id}</td>
-                                            <td className="px-3 py-1.5 truncate max-w-[100px]" title={item.label}>{item.label || '-'}</td>
-                                            <td className="px-3 py-1.5 text-zinc-500">{item.type || 'N/A'}</td>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <td className="px-3 py-1.5 truncate max-w-[80px]" title={item.source}>{item.source}</td>
-                                            <td className="px-3 py-1.5 truncate max-w-[80px]" title={item.target}>{item.target}</td>
-                                            <td className="px-3 py-1.5 text-zinc-500">{item.type || 'Edge'}</td>
-                                        </>
-                                    )}
-                                </tr>
-                            );
-                        })}
-                        {filteredData.length === 0 && (
-                            <tr>
-                                <td colSpan={3} className="px-3 py-4 text-center text-zinc-400 italic">No matches found</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+            <div className="flex-1 overflow-auto p-2">
+                <div className="h-full border border-retro-border shadow-pro-sm bg-retro-surface">
+                    <RetroTable
+                        headers={columns}
+                        data={filteredData}
+                        onRowClick={(item) => onSelection && onSelection(item, activeTab)}
+                        keyField="id" // Works for nodes, RetroTable needs to handle missing id for edges or we gen a key
+                    />
+                </div>
             </div>
         </div>
     );

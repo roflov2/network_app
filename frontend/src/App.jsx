@@ -17,6 +17,8 @@ import PathTable from './components/UI/PathTable';
 import CommunityPanel from './components/UI/CommunityPanel';
 import FloatingControls from './components/UI/FloatingControls';
 import HelpModal from './components/UI/HelpModal';
+import StatBox from './components/ui/StatBox';
+import PixelButton from './components/ui/PixelButton';
 
 export default function App() {
     const [graph, setGraph] = useState(null);
@@ -234,14 +236,14 @@ export default function App() {
                     width: sidebarWidth,
                     transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)'
                 }}
-                className={`absolute top-0 left-0 h-full z-40 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md border-r border-zinc-200 dark:border-zinc-700 shadow-2xl transition-transform duration-300 overflow-hidden group`}
+                className={`absolute top-0 left-0 h-full z-40 bg-retro-paper border-r-2 border-retro-border shadow-pro transition-transform duration-300 overflow-hidden group`}
             >
                 <div className="h-full flex flex-col overflow-hidden">
                     {/* Top Section: Controls + Stats (Flex 1) */}
                     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
                         <div className="p-4 space-y-4 overflow-y-auto">
                             <div className="flex items-center justify-between mb-2">
-                                <h1 className="text-xl font-bold tracking-tight">Network Explorer</h1>
+                                <h1 className="font-brand text-2xl tracking-tighter text-retro-primary">NETWORK<br />EXPLORER</h1>
                                 <button onClick={() => setSidebarOpen(false)} className="lg:hidden">
                                     <X size={20} />
                                 </button>
@@ -255,36 +257,27 @@ export default function App() {
 
                             {/* Stats */}
                             {graph ? (
-                                <div className="space-y-2">
-                                    <div className="text-sm font-medium text-zinc-500 uppercase tracking-wider">STATS</div>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div className="bg-zinc-100 dark:bg-zinc-900 p-3 rounded">
-                                            <div className="text-2xl font-bold">{graph.order}</div>
-                                            <div className="text-xs text-zinc-500">Nodes</div>
-                                        </div>
-                                        <div className="bg-zinc-100 dark:bg-zinc-900 p-3 rounded">
-                                            <div className="text-2xl font-bold">{graph.size}</div>
-                                            <div className="text-xs text-zinc-500">Edges</div>
-                                        </div>
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <StatBox label="Nodes" value={graph.order} />
+                                        <StatBox label="Edges" value={graph.size} />
                                     </div>
 
 
                                     {/* Document Collapse Toggle (Moved here) */}
                                     {/* Document Collapse Toggle (Hidden in Path Mode) */}
                                     {!pathGraph && (
-                                        <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                                            <button
+                                        <div className="mt-4 pt-4 border-t border-retro-border">
+                                            <PixelButton
                                                 onClick={() => setIsDocumentsCollapsed(!isDocumentsCollapsed)}
-                                                className={`w-full py-2 px-3 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 ${isDocumentsCollapsed
-                                                    ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700'
-                                                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
-                                                    }`}
+                                                active={isDocumentsCollapsed}
+                                                className="w-full flex items-center justify-center gap-2"
                                             >
-                                                {isDocumentsCollapsed ? <FilePlus size={16} /> : <FileMinus size={16} />}
-                                                {isDocumentsCollapsed ? "Show Documents" : "Collapse Documents"}
-                                            </button>
+                                                {isDocumentsCollapsed ? <FilePlus size={14} /> : <FileMinus size={14} />}
+                                                {isDocumentsCollapsed ? "Show Docs" : "Collapse Docs"}
+                                            </PixelButton>
                                             {!isDocumentsCollapsed && (
-                                                <div className="text-xs text-center text-zinc-500 mt-2">
+                                                <div className="text-[10px] font-mono text-center text-retro-muted mt-2 uppercase tracking-tight">
                                                     Hide documents to simplify graph
                                                 </div>
                                             )}

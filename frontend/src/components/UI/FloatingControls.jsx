@@ -1,5 +1,6 @@
 import React from 'react';
 import { Upload, Navigation, HelpCircle, Menu, X, FolderOpen, Users, Search } from 'lucide-react';
+import PixelButton from '../ui/PixelButton';
 
 export default function FloatingControls({
     onUpload,
@@ -13,78 +14,121 @@ export default function FloatingControls({
     onToggleSearch,
     isSearchOpen
 }) {
-    const btnClass = "p-3 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-full shadow-lg border border-zinc-200 dark:border-zinc-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center relative group";
+    // Shared container class for standard width
+    const containerClass = "flex flex-col gap-3 z-30 pointer-events-auto absolute top-4 right-4";
 
-    // Active state style for toggles
-    const activeClass = "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800";
+    const buttonClass = "w-12 h-12 flex items-center justify-center p-0";
+    const iconSize = 24;
+
+    // Active state class: Inverted colors (Dark BG, White Text) + Hover adjustment (Red Text)
+    // Using !important to override PixelButton default classes
+    // Active state class: Inverted colors (Dark BG, White Text) + Hover adjustment (Red Text)
+    // Using !important to override PixelButton default classes
+    const activeBtnClass = "!bg-slate-800 !text-white shadow-none translate-x-[1px] translate-y-[1px] !hover:bg-slate-800 !hover:text-red-500";
 
     return (
-        <div className="absolute top-4 right-4 flex flex-col gap-3 z-30 pointer-events-auto">
+        <div className={containerClass}>
             {/* Search Toggle */}
-            <button
-                onClick={onToggleSearch}
-                className={`${btnClass} ${isSearchOpen ? activeClass : ''}`}
-                title="Search Nodes"
-            >
-                {isSearchOpen ? <X size={20} /> : <Search size={20} />}
-                <span className="absolute right-full mr-2 px-2 py-1 bg-zinc-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    {isSearchOpen ? "Close Search" : "Search Nodes"}
-                </span>
-            </button>
+            <div className="relative group">
+                <PixelButton
+                    onClick={onToggleSearch}
+                    // active prop removed to allow full override via className
+                    className={`${buttonClass} ${isSearchOpen ? activeBtnClass : ''}`}
+                    title="" // Remove native tooltip to avoid double
+                >
+                    {isSearchOpen ? <X size={iconSize} /> : <Search size={iconSize} />}
+                </PixelButton>
+                <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-zinc-900 border-2 border-retro-border text-white text-xs font-mono font-bold uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-pro-sm z-50 pointer-events-none">
+                    {isSearchOpen ? "Close Search" : "Search"}
+                </div>
+            </div>
 
             {/* Upload (Primary Action) */}
-            <button onClick={onUpload} className={btnClass} title="Upload Data">
-                <FolderOpen size={20} />
-                <span className="absolute right-full mr-2 px-2 py-1 bg-zinc-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            <div className="relative group">
+                <PixelButton
+                    onClick={onUpload}
+                    className={buttonClass}
+                    title=""
+                >
+                    <FolderOpen size={iconSize} />
+                </PixelButton>
+                <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-zinc-900 border-2 border-retro-border text-white text-xs font-mono font-bold uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-pro-sm z-50 pointer-events-none">
                     Upload CSV
-                </span>
-            </button>
+                </div>
+            </div>
 
             {/* Toggle Communities */}
-            <button
-                onClick={onToggleCommunities}
-                className={`${btnClass} ${showCommunities ? "bg-red-50 text-red-600 border-red-200 hover:bg-red-100" : ''}`}
-                title={showCommunities ? "Hide Communities" : "Show Communities"}
-            >
-                {showCommunities ? <X size={20} /> : <Users size={20} />}
-                <span className="absolute right-full mr-2 px-2 py-1 bg-zinc-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    {showCommunities ? "Hide Communities" : "Show Communities"}
-                </span>
-            </button>
+            <div className="relative group">
+                <PixelButton
+                    onClick={onToggleCommunities}
+                    // active prop removed to allow full override via className
+                    className={`${buttonClass} ${showCommunities ? activeBtnClass : ''}`}
+                    title=""
+                >
+                    {showCommunities ? <X size={iconSize} /> : <Users size={iconSize} />}
+                </PixelButton>
+                <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-zinc-900 border-2 border-retro-border text-white text-xs font-mono font-bold uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-pro-sm z-50 pointer-events-none">
+                    {showCommunities ? "Hide Clusters" : "Show Clusters"}
+                </div>
+            </div>
 
             {/* Find Path */}
-            <button onClick={onFindPath} className={btnClass} title="Find Path">
-                <Navigation size={20} />
-                <span className="absolute right-full mr-2 px-2 py-1 bg-zinc-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            <div className="relative group">
+                <PixelButton
+                    onClick={onFindPath}
+                    className={buttonClass}
+                    title=""
+                >
+                    <Navigation size={iconSize} />
+                </PixelButton>
+                <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-zinc-900 border-2 border-retro-border text-white text-xs font-mono font-bold uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-pro-sm z-50 pointer-events-none">
                     Find Path
-                </span>
-            </button>
+                </div>
+            </div>
 
             {/* Clear Path (Conditional) */}
             {hasPath && (
-                <button onClick={onClearPath} className={`${btnClass} bg-red-50 text-red-600 border-red-200 hover:bg-red-100`} title="Clear Path">
-                    <X size={20} />
-                    <span className="absolute right-full mr-2 px-2 py-1 bg-zinc-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                <div className="relative group">
+                    <PixelButton
+                        onClick={onClearPath}
+                        className={`${buttonClass} bg-red-100 hover:bg-red-200 border-red-900 text-red-900`}
+                        title=""
+                    >
+                        <X size={iconSize} />
+                    </PixelButton>
+                    <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-zinc-900 border-2 border-retro-border text-white text-xs font-mono font-bold uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-pro-sm z-50 pointer-events-none">
                         Clear Path
-                    </span>
-                </button>
+                    </div>
+                </div>
             )}
 
             {/* Help Button */}
-            <button onClick={onOpenHelp} className={btnClass} title="Help / Info">
-                <HelpCircle size={20} />
-                <span className="absolute right-full mr-2 px-2 py-1 bg-zinc-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            <div className="relative group">
+                <PixelButton
+                    onClick={onOpenHelp}
+                    className={buttonClass}
+                    title=""
+                >
+                    <HelpCircle size={iconSize} />
+                </PixelButton>
+                <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-zinc-900 border-2 border-retro-border text-white text-xs font-mono font-bold uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-pro-sm z-50 pointer-events-none">
                     Help / Info
-                </span>
-            </button>
+                </div>
+            </div>
 
             {/* Sidebar Toggle */}
-            <button onClick={onOpenSettings} className={btnClass} title="Show Controls">
-                <Menu size={20} />
-                <span className="absolute right-full mr-2 px-2 py-1 bg-zinc-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    Show Controls
-                </span>
-            </button>
+            <div className="relative group">
+                <PixelButton
+                    onClick={onOpenSettings}
+                    className={buttonClass}
+                    title=""
+                >
+                    <Menu size={iconSize} />
+                </PixelButton>
+                <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-zinc-900 border-2 border-retro-border text-white text-xs font-mono font-bold uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-pro-sm z-50 pointer-events-none">
+                    Menu
+                </div>
+            </div>
         </div>
     );
 }
