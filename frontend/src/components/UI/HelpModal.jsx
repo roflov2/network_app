@@ -11,7 +11,7 @@ export default function HelpModal({ onClose }) {
                         <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-md">
                             <HelpCircle size={20} className="text-blue-600 dark:text-blue-400" />
                         </div>
-                        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                        <h2 className="text-sm logo-font text-zinc-900 dark:text-zinc-100 mt-1">
                             Network Guide
                         </h2>
                     </div>
@@ -24,13 +24,13 @@ export default function HelpModal({ onClose }) {
                 </div>
 
                 {/* Content */}
-                <div className="p-6 space-y-6">
-                    <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                <div className="p-6 space-y-6 font-mono">
+                    <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
                         Welcome to the Network Explorer. This interactive tool helps you visualise and analyse complex relationships between entities.
                     </p>
 
                     <div className="space-y-4">
-                        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider text-xs">
+                        <h3 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
                             Core Interactions
                         </h3>
 
@@ -40,8 +40,8 @@ export default function HelpModal({ onClose }) {
                                     <Move size={18} className="text-zinc-600 dark:text-zinc-400" />
                                 </div>
                                 <div>
-                                    <h4 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Rearrange</h4>
-                                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                                    <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Rearrange</h4>
+                                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">
                                         <strong>Drag</strong> nodes to adjust the layout and group related entities visually.
                                     </p>
                                 </div>
@@ -52,8 +52,8 @@ export default function HelpModal({ onClose }) {
                                     <MousePointer2 size={18} className="text-zinc-600 dark:text-zinc-400" />
                                 </div>
                                 <div>
-                                    <h4 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Focus & Explore</h4>
-                                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                                    <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Focus & Explore</h4>
+                                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">
                                         <strong>Click</strong> a node to highlight its direct connections and filter out noise.
                                     </p>
                                 </div>
@@ -64,8 +64,8 @@ export default function HelpModal({ onClose }) {
                                     <Navigation size={18} className="text-zinc-600 dark:text-zinc-400" />
                                 </div>
                                 <div>
-                                    <h4 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Find Paths</h4>
-                                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                                    <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Find Paths</h4>
+                                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">
                                         Use the navigation tool to discover the shortest routes between two specific entities.
                                     </p>
                                 </div>
@@ -76,8 +76,8 @@ export default function HelpModal({ onClose }) {
                                     <Users size={18} className="text-zinc-600 dark:text-zinc-400" />
                                 </div>
                                 <div>
-                                    <h4 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Communities</h4>
-                                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                                    <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Communities</h4>
+                                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">
                                         Toggle community detection to identify and visualise distinct clusters within the network.
                                     </p>
                                 </div>
@@ -88,8 +88,8 @@ export default function HelpModal({ onClose }) {
                                     <Calendar size={18} className="text-zinc-600 dark:text-zinc-400" />
                                 </div>
                                 <div>
-                                    <h4 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Temporal Distribution</h4>
-                                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                                    <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Temporal Distribution</h4>
+                                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">
                                         View when network entities appeared over time. Expand the bottom panel to explore trends by year or month.
                                     </p>
                                 </div>
@@ -102,9 +102,9 @@ export default function HelpModal({ onClose }) {
                 <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 flex justify-end">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-medium rounded-md hover:opacity-90 transition-opacity"
+                        className="px-4 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs logo-font rounded-md hover:opacity-90 transition-opacity"
                     >
-                        Got it
+                        GOT IT
                     </button>
                 </div>
             </div>

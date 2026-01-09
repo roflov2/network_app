@@ -50,39 +50,39 @@ export default function PathTable({ paths, selectedPathIndex, onSelectPath }) {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Route size={16} className="text-zinc-500" />
-                        <h3 className="text-sm font-semibold">
-                            Shortest Paths ({paths.length} found)
+                        <h3 className="text-xs logo-font text-zinc-700 dark:text-zinc-200 mt-1">
+                            SHORTEST PATHS ({paths.length})
                         </h3>
                     </div>
 
                     {/* CSV Export */}
                     <button
                         onClick={handleExport}
-                        className="flex items-center gap-1 px-2 py-1 text-xs border border-zinc-300 dark:border-zinc-600 rounded hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+                        className="flex items-center gap-1 px-2 py-1 text-xs border border-zinc-300 dark:border-zinc-600 rounded hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors font-mono"
                         title="Download as CSV"
                     >
                         <Download size={14} />
                         <span>CSV</span>
                     </button>
                 </div>
-                <p className="text-xs text-zinc-500 mt-1">
+                <p className="text-[10px] text-zinc-500 mt-1 font-mono">
                     Click a path to highlight it in the graph
                 </p>
             </div>
 
             {/* Path List */}
             <div className="flex-1 overflow-y-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm font-mono">
                     <thead className="bg-zinc-100 dark:bg-zinc-800 sticky top-0 z-10">
                         <tr>
-                            <th className="px-4 py-2 text-left font-medium text-zinc-600 dark:text-zinc-400">
+                            <th className="px-4 py-2 text-left logo-font text-[10px] text-zinc-600 dark:text-zinc-400">
                                 #
                             </th>
-                            <th className="px-4 py-2 text-left font-medium text-zinc-600 dark:text-zinc-400">
-                                Path
+                            <th className="px-4 py-2 text-left logo-font text-[10px] text-zinc-600 dark:text-zinc-400">
+                                PATH
                             </th>
-                            <th className="px-4 py-2 text-left font-medium text-zinc-600 dark:text-zinc-400">
-                                Hops
+                            <th className="px-4 py-2 text-left logo-font text-[10px] text-zinc-600 dark:text-zinc-400">
+                                HOPS
                             </th>
                         </tr>
                     </thead>

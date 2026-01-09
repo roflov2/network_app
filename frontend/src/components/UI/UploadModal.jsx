@@ -57,12 +57,12 @@ export default function UploadModal({ isOpen, onClose, onUpload }) {
                     <X size={20} />
                 </button>
 
-                <h2 className="text-2xl font-bold mb-4 text-zinc-900 dark:text-white">Upload Network Data</h2>
+                <h2 className="text-sm logo-font mb-4 text-zinc-900 dark:text-white mt-2">Upload Network Data</h2>
 
                 <div
-                    className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${dragActive
-                            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                            : "border-zinc-300 dark:border-zinc-700 hover:border-blue-400 dark:hover:border-blue-600"
+                    className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors font-mono ${dragActive
+                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                        : "border-zinc-300 dark:border-zinc-700 hover:border-blue-400 dark:hover:border-blue-600"
                         }`}
                     onDragEnter={handleDrag}
                     onDragLeave={handleDrag}
@@ -78,17 +78,17 @@ export default function UploadModal({ isOpen, onClose, onUpload }) {
 
                     <div className="flex flex-col items-center gap-2 pointer-events-none">
                         <Upload size={40} className="text-zinc-400" />
-                        <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                        <p className="font-bold text-sm text-zinc-700 dark:text-zinc-200">
                             Drag & Drop your CSV here
                         </p>
-                        <p className="text-sm text-zinc-500">
+                        <p className="text-xs text-zinc-500">
                             or click to browse
                         </p>
                     </div>
                 </div>
 
                 {uploading && (
-                    <div className="mt-4 text-center text-blue-500 font-medium">Processing...</div>
+                    <div className="mt-4 text-center text-blue-500 font-bold font-mono text-sm">Processing...</div>
                 )}
             </div>
         </div>
