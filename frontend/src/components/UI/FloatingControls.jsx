@@ -1,6 +1,6 @@
 import React from 'react';
 import { Upload, Navigation, HelpCircle, Menu, X, FolderOpen, Users, Search } from 'lucide-react';
-import PixelButton from '../ui/PixelButton';
+import PixelButton from '../UI/PixelButton';
 
 export default function FloatingControls({
     onUpload,

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Filter, Eye, EyeOff, ChevronDown, ChevronRight } from 'lucide-react';
 import { getColorForType } from '../../utils/graph-logic';
-import PixelButton from '../ui/PixelButton';
+import PixelButton from '../UI/PixelButton';
 
 export default function TypeFilters({ availableTypes, selectedTypes, onToggleType, onSelectAll, onDeselectAll, hideColors }) {
     const [isExpanded, setIsExpanded] = useState(false);

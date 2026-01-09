@@ -17,8 +17,8 @@ import PathTable from './components/UI/PathTable';
 import CommunityPanel from './components/UI/CommunityPanel';
 import FloatingControls from './components/UI/FloatingControls';
 import HelpModal from './components/UI/HelpModal';
-import StatBox from './components/ui/StatBox';
-import PixelButton from './components/ui/PixelButton';
+import StatBox from './components/UI/StatBox';
+import PixelButton from './components/UI/PixelButton';
 import NetworkExplorerLogo from './components/NetworkExplorerLogo';
 
 export default function App() {

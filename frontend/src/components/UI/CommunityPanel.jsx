@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Users, X, ChevronUp, ChevronDown, Info } from 'lucide-react';
-import DataCard from '../ui/DataCard';
-import PixelButton from '../ui/PixelButton';
+import DataCard from '../UI/DataCard';
+import PixelButton from '../UI/PixelButton';
 
 // Icons for Centrality Avatars (SVG Data URIs)
 const BRIDGE_ICON = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEwIDEzYTVlNSA1IDAgMCAwIDcuNTQgLjU0bDMsM2E1IDUgMCAwIDAgNy4wNy03LjA3bC0xLjcyLTEuNzEiLz48cGF0aCBkPSJNMTQgMTFhNSA1IDAgMCAwLTcuNTQtLjU0bC0zLTNhNSA1IDAgMCAwLTcuMDcgNy4wN2wxLjcyIDEuNzEiLz48L3N2Zz4=";
