@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, X, ChevronUp, ChevronDown } from 'lucide-react';
+import { Users, X, ChevronUp, ChevronDown, Info } from 'lucide-react';
 
 export default function CommunityPanel({
     communities,
@@ -18,8 +18,8 @@ export default function CommunityPanel({
     const sortedCommunities = Object.entries(communities)
         .sort(([, a], [, b]) => b.count - a.count);
 
-    // Bottom variant uses local expanded state
-    const [isExpanded, setIsExpanded] = useState(false);
+    // Info modal state
+    const [showInfo, setShowInfo] = useState(false);
 
     // Dynamic styles based on variant
     const containerStyle = variant === 'bottom'
@@ -43,6 +43,57 @@ export default function CommunityPanel({
 
     return (
         <div style={containerStyle} className={containerClass}>
+            {/* Context Info Overlay */}
+            {showInfo && (
+                <div className="absolute inset-0 bg-white/95 dark:bg-zinc-900/95 z-50 p-6 flex flex-col overflow-y-auto backdrop-blur-sm">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-bold flex items-center gap-2">
+                            <Users size={20} className="text-blue-600 dark:text-blue-400" />
+                            Understanding Communities
+                        </h3>
+                        <button
+                            onClick={() => setShowInfo(false)}
+                            className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors"
+                        >
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    <div className="space-y-4 text-sm text-zinc-600 dark:text-zinc-300">
+                        <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-800/30">
+                            <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-1">What is a Community?</h4>
+                            <p>
+                                A community is a densely connected group of nodes. We use the <strong>Louvain Algorithm</strong> to detect these clusters, finding groups that interact more with each other than with the rest of the network.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h4 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Togetherness Measures</h4>
+                            <div className="grid grid-cols-1 gap-3">
+                                <div className="border border-zinc-200 dark:border-zinc-700 p-3 rounded-md">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                                        <span className="font-medium text-zinc-900 dark:text-zinc-100">Hub (Degree Centrality)</span>
+                                    </div>
+                                    <p className="text-xs">
+                                        The most connected node <em>within</em> the community. Think of it as the "leader" or "center" of the group.
+                                    </p>
+                                </div>
+                                <div className="border border-zinc-200 dark:border-zinc-700 p-3 rounded-md">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                        <span className="font-medium text-zinc-900 dark:text-zinc-100">Bridge (Betweenness Centrality)</span>
+                                    </div>
+                                    <p className="text-xs">
+                                        A node that acts as a connector to <em>other</em> communities. It holds the network together by linking different groups.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {variant === 'bottom' && !isExpanded ? (
                 /* Collapsed Handle for Bottom Variant */
                 <button
@@ -65,6 +116,13 @@ export default function CommunityPanel({
                             <h3 className="text-sm font-semibold">
                                 Detected Communities
                             </h3>
+                            <button
+                                onClick={() => setShowInfo(true)}
+                                className="ml-1 text-zinc-400 hover:text-blue-500 transition-colors"
+                                title="What is this?"
+                            >
+                                <Info size={14} />
+                            </button>
                         </div>
                         <div className="flex items-center gap-2">
                             <p className="text-xs text-zinc-500">
