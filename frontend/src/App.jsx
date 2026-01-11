@@ -78,16 +78,16 @@ export default function App() {
     const handleUpload = async (file) => {
         setLoading(true);
 
-        if (import.meta.env.PROD) {
-            alert("File processing requires a Python backend and is not available in this GitHub Pages demo. Please use 'Load Demo Data' to explore the application features.");
-            setLoading(false);
-            return;
-        }
-
         const formData = new FormData();
         formData.append('file', file);
+
+        // determine API URL
+        const API_URL = import.meta.env.PROD
+            ? 'https://networkapp-production.up.railway.app/process-csv'
+            : '/api/process-csv';
+
         try {
-            const res = await fetch('/api/process-csv', {
+            const res = await fetch(API_URL, {
                 method: 'POST',
                 body: formData
             });
