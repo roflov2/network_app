@@ -12,27 +12,44 @@ export default function Timeline({ graph, sidebarOpen, sidebarWidth }) {
     const timelineData = useMemo(() => {
         if (!graph) return [];
 
-        const nodes = graph.nodes();
-        const dates = nodes.map((node, i) => {
-            // Clump nodes to create peaks in the chart
-            // Cluster 0: Recent (0-60 days)
-            // Cluster 1: ~1 Year ago
-            // Cluster 2: ~2 Years ago
-            const clusterIdx = i % 3;
-            const yearDays = 365;
-            // Base offset: 0, 1 year, or 2 years
-            const baseOffset = clusterIdx * yearDays;
+        // 1. Try to extract Real Dates from Edges first
+        let dates = [];
+        let hasRealDates = false;
 
-            // Jitter: spread within 45 days so they fall in 1-2 months
-            const jitter = (node.charCodeAt(0) * 17) % 45;
-
-            const offsetDays = baseOffset + jitter;
-
-            const baseDate = new Date();
-            const date = new Date(baseDate);
-            date.setDate(date.getDate() - offsetDays);
-            return date;
+        graph.forEachEdge((edge, attr) => {
+            if (attr.date) {
+                const d = new Date(attr.date);
+                if (!isNaN(d.getTime())) {
+                    dates.push(d);
+                    hasRealDates = true;
+                }
+            }
         });
+
+        // 2. Fallback to Mock Dates if no real dates found (Demo Mode)
+        if (!hasRealDates || dates.length === 0) {
+            const nodes = graph.nodes();
+            dates = nodes.map((node, i) => {
+                // Clump nodes to create peaks in the chart
+                // Cluster 0: Recent (0-60 days)
+                // Cluster 1: ~1 Year ago
+                // Cluster 2: ~2 Years ago
+                const clusterIdx = i % 3;
+                const yearDays = 365;
+                // Base offset: 0, 1 year, or 2 years
+                const baseOffset = clusterIdx * yearDays;
+
+                // Jitter: spread within 45 days so they fall in 1-2 months
+                const jitter = (node.charCodeAt(0) * 17) % 45;
+
+                const offsetDays = baseOffset + jitter;
+
+                const baseDate = new Date();
+                const date = new Date(baseDate);
+                date.setDate(date.getDate() - offsetDays);
+                return date;
+            });
+        }
 
         // 1. Identify Range
         if (dates.length === 0) return [];

@@ -453,7 +453,7 @@ export default function App() {
                                 onClose={() => setShowCommunities(false)}
                             />
                         ) : (
-                            <Timeline graph={graph} sidebarOpen={sidebarOpen} sidebarWidth={sidebarWidth} />
+                            <Timeline graph={displayedGraph || graph} sidebarOpen={sidebarOpen} sidebarWidth={sidebarWidth} />
                         )
                     )}
 
