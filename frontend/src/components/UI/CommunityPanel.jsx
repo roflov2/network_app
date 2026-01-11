@@ -152,7 +152,7 @@ export default function CommunityPanel({
                             {onClose && (
                                 <button
                                     onClick={onClose}
-                                    className="p-0.5 hover:bg-slate-200 border border-transparent hover:border-retro-border transition-all"
+                                    className="p-0.5 hover:bg-slate-200 border border-transparent hover:border-retro-border transition-all text-black"
                                     title="Close"
                                 >
                                     <X size={14} />

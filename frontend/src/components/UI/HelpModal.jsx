@@ -17,7 +17,7 @@ export default function HelpModal({ onClose }) {
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-1 rounded-md text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                        className="p-1 rounded-md text-black hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
                     >
                         <X size={20} />
                     </button>

@@ -87,6 +87,28 @@ export default function UploadModal({ isOpen, onClose, onUpload }) {
                     </div>
                 </div>
 
+                <div className="mt-6 mb-2">
+                    <h3 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase mb-2">Required CSV Structure</h3>
+                    <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-lg p-3 border border-zinc-200 dark:border-zinc-700">
+                        <div className="grid grid-cols-3 gap-2 text-[10px] font-mono text-zinc-600 dark:text-zinc-400">
+                            <div className="font-bold text-zinc-800 dark:text-zinc-200">Source</div>
+                            <div className="col-span-2">Source node ID</div>
+
+                            <div className="font-bold text-zinc-800 dark:text-zinc-200">Target</div>
+                            <div className="col-span-2">Target node ID</div>
+
+                            <div className="font-bold text-zinc-800 dark:text-zinc-200">Edge_Type</div>
+                            <div className="col-span-2">Relationship (e.g., MENTIONS)</div>
+
+                            <div className="font-bold text-zinc-800 dark:text-zinc-200">Target_Type</div>
+                            <div className="col-span-2">Category (e.g., Person)</div>
+
+                            <div className="font-bold text-zinc-800 dark:text-zinc-200">Date</div>
+                            <div className="col-span-2">YYYY-MM-DD</div>
+                        </div>
+                    </div>
+                </div>
+
                 {uploading && (
                     <div className="mt-4 text-center text-blue-500 font-bold font-mono text-sm">Processing...</div>
                 )}
