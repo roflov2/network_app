@@ -277,9 +277,10 @@ export default function InteractiveGraph({ graphData, focusedNode, focusedEdge, 
                     res.color = "#2c3e50";
                     res.zIndex = 10;
                 }
-                if (clickedNodes.has(node) && node !== focusedNode && node !== hoveredNode) {
-                    res.color = "#27ae60";
-                }
+                // Removed green highlight for clicked nodes to preserve legend colors
+                // if (clickedNodes.has(node) && node !== focusedNode && node !== hoveredNode) {
+                //    res.color = "#27ae60";
+                // }
                 if (focusedEdge && displayedGraph.hasEdge(focusedEdge)) {
                     if (displayedGraph.hasExtremity(focusedEdge, node)) {
                         res.highlighted = true;
