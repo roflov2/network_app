@@ -120,8 +120,30 @@ export default function App() {
             setAllPaths(paths);
             setSelectedPathIndex(0); // Select first path by default
 
-            // Create subgraph for first path
-            const pathSub = getPathSubgraph(graph, [paths[0]]);
+            // Create union subgraph of ALL paths (so they are all visible)
+            const pathSub = getPathSubgraph(graph, paths);
+
+            // 1. Reset ALL edges in subgraph to neutral 'alternate' style
+            pathSub.forEachEdge(edge => {
+                pathSub.setEdgeAttribute(edge, 'color', '#94a3b8'); // Slate-400
+                pathSub.setEdgeAttribute(edge, 'size', 1);
+                pathSub.setEdgeAttribute(edge, 'zIndex', 0);
+            });
+
+            // 2. Highlight SELECTED path (First one initially)
+            const selectedPath = paths[0];
+            for (let i = 0; i < selectedPath.length - 1; i++) {
+                const u = selectedPath[i];
+                const v = selectedPath[i + 1];
+                // Check both directions
+                const edge = pathSub.edge(u, v) || pathSub.edge(v, u);
+                if (edge) {
+                    pathSub.setEdgeAttribute(edge, 'color', '#EF4444'); // Red-500
+                    pathSub.setEdgeAttribute(edge, 'size', 4); // Thick
+                    pathSub.setEdgeAttribute(edge, 'zIndex', 10);
+                }
+            }
+
             setPathGraph(pathSub); // Switch to path view
             setIsPathOpen(false);
             setFocusedNode(null); // Clear focus to avoid conflict
@@ -135,8 +157,31 @@ export default function App() {
         if (!graph || !allPaths || !allPaths[pathIndex]) return;
 
         setSelectedPathIndex(pathIndex);
-        // Create subgraph for selected path only
-        const pathSub = getPathSubgraph(graph, [allPaths[pathIndex]]);
+
+        // Create union subgraph of ALL paths (to keep context)
+        const pathSub = getPathSubgraph(graph, allPaths);
+
+        // 1. Reset ALL edges in subgraph to neutral
+        pathSub.forEachEdge(edge => {
+            pathSub.setEdgeAttribute(edge, 'color', '#94a3b8'); // Slate-400
+            pathSub.setEdgeAttribute(edge, 'size', 1);
+            pathSub.setEdgeAttribute(edge, 'zIndex', 0);
+        });
+
+        // 2. Highlight SELECTED path
+        const selectedPath = allPaths[pathIndex];
+        for (let i = 0; i < selectedPath.length - 1; i++) {
+            const u = selectedPath[i];
+            const v = selectedPath[i + 1];
+            // Check both directions
+            const edge = pathSub.edge(u, v) || pathSub.edge(v, u);
+            if (edge) {
+                pathSub.setEdgeAttribute(edge, 'color', '#EF4444'); // Red-500
+                pathSub.setEdgeAttribute(edge, 'size', 4); // Thick
+                pathSub.setEdgeAttribute(edge, 'zIndex', 10);
+            }
+        }
+
         setPathGraph(pathSub);
     };
 
