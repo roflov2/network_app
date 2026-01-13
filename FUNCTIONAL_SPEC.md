@@ -326,6 +326,14 @@ Nodes are colored using the **website brand palette** (from Bias and Brew) for v
 
 ---
 
+### 5.9 AI Relationship Summary
+**Engine:** Google Gemini 2.0 Flash (via Backend API).
+-   **Trigger:** User selects an edge and clicks the "AI Summary" button (Sidebar).
+-   **Input:** Source Node, Target Node, Edge Type, Document Content (from edge attribute).
+-   **Output:** Concise 2-3 sentence summary of the relationship.
+-   **Fallback:** Displays raw document content if API fails or plain text is preferred.
+
+
 ## 6. API Specification
 
 ### 6.1 Base URL
@@ -372,6 +380,27 @@ Nodes are colored using the **website brand palette** (from Bias and Brew) for v
 **Request:** Empty body.
 
 **Response:** Returns the same Graph JSON structure as `/process-csv`.
+
+#### `POST /summarize-edge`
+**Purpose:** Generates an AI summary of a relationship based on document context.
+
+**Request:** JSON body.
+```json
+{
+  "source": "DOC-1",
+  "target": "Alice",
+  "edge_type": "MENTIONS",
+  "target_type": "Person",
+  "document_content": "Alice met Bob at the park on 2023-10-12..."
+}
+```
+
+**Response:** JSON.
+```json
+{
+  "summary": "Alice and Bob met at the park on October 12, 2023."
+}
+```
 
 ---
 

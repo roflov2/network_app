@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import InteractiveGraph from './components/Graph/InteractiveGraph';
 import UploadModal from './components/UI/UploadModal';
-import { Upload, Play, Menu, X, Search, Navigation, FileMinus, FilePlus } from 'lucide-react';
+import { Upload, Play, Menu, X, Search, Navigation, FileMinus, FilePlus, Sparkles } from 'lucide-react';
 import { processGraphData, applyLayoutAndCommunities, findShortestPath, getPathSubgraph, filterGraphByTypes, getNodeTypes, collapseDocuments, get2HopNeighborhood, detectCommunities, greyOutNonCommunityNodes, filterGraphByCommunity, getCommunityCentrality } from './utils/graph-logic';
 import { SearchUI } from './components/UI/SearchOverlay';
 import PathModal from './components/UI/PathModal';
@@ -17,6 +17,7 @@ import PathTable from './components/UI/PathTable';
 import CommunityPanel from './components/UI/CommunityPanel';
 import FloatingControls from './components/UI/FloatingControls';
 import HelpModal from './components/UI/HelpModal';
+import SummaryModal from './components/UI/SummaryModal';
 import StatBox from './components/UI/StatBox';
 import PixelButton from './components/UI/PixelButton';
 import NetworkExplorerLogo from './components/NetworkExplorerLogo';
@@ -43,6 +44,7 @@ export default function App() {
     const [viewAllData, setViewAllData] = useState(false); // Toggle to show all data vs filtered
     const [isHelpOpen, setIsHelpOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [summaryContent, setSummaryContent] = useState(null);
 
     const handleDemoLoad = async () => {
         setLoading(true);
@@ -330,6 +332,72 @@ export default function App() {
                                             )}
                                         </div>
                                     )}
+
+                                    {/* AI Summary Button */}
+                                    {focusedEdge && (
+                                        <div className="mt-4 pt-4 border-t border-retro-border">
+                                            <PixelButton
+                                                onClick={async () => {
+                                                    if (graph && graph.hasEdge(focusedEdge)) {
+                                                        const attrs = graph.getEdgeAttributes(focusedEdge);
+                                                        const docContent = attrs.Description;
+
+                                                        // If no content, just show the fallback immediately
+                                                        if (!docContent || docContent.trim() === "") {
+                                                            setSummaryContent("No document content available to summarize.");
+                                                            return;
+                                                        }
+
+                                                        // Show loading state
+                                                        setSummaryContent("Generating AI summary with Gemini...");
+
+                                                        // Determine API URL
+                                                        const BASE_URL = import.meta.env.PROD
+                                                            ? 'https://networkapp-production.up.railway.app'
+                                                            : '/api';
+
+                                                        try {
+                                                            const source = graph.source(focusedEdge);
+                                                            const target = graph.target(focusedEdge);
+                                                            const edgeType = attrs.type || "RELATIONSHIP";
+                                                            const targetType = graph.getNodeAttribute(target, 'type') || "Entity";
+
+                                                            const res = await fetch(`${BASE_URL}/summarize-edge`, {
+                                                                method: 'POST',
+                                                                headers: {
+                                                                    'Content-Type': 'application/json'
+                                                                },
+                                                                body: JSON.stringify({
+                                                                    source: source,
+                                                                    target: target,
+                                                                    edge_type: edgeType,
+                                                                    target_type: targetType,
+                                                                    document_content: docContent
+                                                                })
+                                                            });
+
+                                                            if (!res.ok) {
+                                                                const errData = await res.json();
+                                                                throw new Error(errData.detail || "Failed to generate summary");
+                                                            }
+
+                                                            const data = await res.json();
+                                                            setSummaryContent(data.summary);
+
+                                                        } catch (err) {
+                                                            console.error("AI Summary Error:", err);
+                                                            setSummaryContent(`Error generating summary: ${err.message}. \n\nFallback Content:\n${docContent}`);
+                                                        }
+                                                    }
+                                                }}
+                                                className="w-full flex items-center justify-center gap-2 !text-[#6252F8] dark:!text-[#8b7fff] hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                                                title="Summarise relationship using Gemini AI"
+                                            >
+                                                <Sparkles size={14} />
+                                                <span>AI Summary</span>
+                                            </PixelButton>
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="text-zinc-400 text-sm italic text-center mt-10">
@@ -579,6 +647,14 @@ export default function App() {
 
             {/* Help Modal */}
             {isHelpOpen && <HelpModal onClose={() => setIsHelpOpen(false)} />}
+
+            {/* AI Summary Modal */}
+            {summaryContent && (
+                <SummaryModal
+                    content={summaryContent}
+                    onClose={() => setSummaryContent(null)}
+                />
+            )}
 
             <UploadModal
                 isOpen={isUploadOpen}

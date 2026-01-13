@@ -3,3 +3,5 @@ uvicorn
 pandas
 python-multipart
 pydantic
+google-generativeai
+python-dotenv

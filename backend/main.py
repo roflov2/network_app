@@ -144,6 +144,62 @@ def load_demo():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading demo data: {str(e)}")
 
+# Ai Summary Integration
+import google.generativeai as genai
+from pydantic import BaseModel
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Configure Gemini
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
+else:
+    print("WARNING: GEMINI_API_KEY not found in environment variables.")
+
+class SummarizeRequest(BaseModel):
+    source: str
+    target: str
+    edge_type: str
+    document_content: str
+    target_type: str = "Entity" # Optional context
+
+@app.post("/summarize-edge")
+async def summarize_edge(request: SummarizeRequest):
+    if not GEMINI_API_KEY:
+        raise HTTPException(status_code=503, detail="AI service not configured (missing API key).")
+
+    try:
+        # Construct the prompt
+        prompt = f"""You are an expert in network analytics and entity relationship analysis.
+        
+        Task: Analyze the relationship between two entities based on the provided document content.
+        
+        Entities:
+        - Source: {request.source} (Document/Context)
+        - Target: {request.target} ({request.target_type})
+        - Relationship Type: {request.edge_type}
+        
+        Document Content:
+        \"\"\"{request.document_content}\"\"\"
+        
+        Instructions:
+        1. Provide a concise summary of the relationship or interaction described in the text.
+        2. Focus on facts: dates, amounts, specific actions, or roles.
+        3. Do not include generic filler like "The document mentions...". Get straight to the point.
+        4. Limit the response to 2-3 sentences max.
+        """
+        
+        model = genai.GenerativeModel('gemini-2.5-flash')
+        response = model.generate_content(prompt)
+        
+        return {"summary": response.text}
+        
+    except Exception as e:
+        print(f"Gemini API Error: {e}")
+        raise HTTPException(status_code=500, detail=f"AI generation failed: {str(e)}")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

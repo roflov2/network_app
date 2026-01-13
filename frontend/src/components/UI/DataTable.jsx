@@ -87,6 +87,9 @@ export default function DataTable({ graph, fullGraph, viewAllData, onToggleViewA
             { header: 'Type', accessor: 'type' }
         ];
 
+    // Inverted style for active tabs
+    const activeClass = "!bg-slate-800 !text-white shadow-none translate-x-[1px] translate-y-[1px] hover:!bg-slate-800";
+
     return (
         <div className="flex flex-col h-full bg-retro-paper border-t-2 border-retro-border">
             {/* Toolbar */}
@@ -94,17 +97,15 @@ export default function DataTable({ graph, fullGraph, viewAllData, onToggleViewA
                 <div className="flex gap-2">
                     <PixelButton
                         onClick={() => setActiveTab('nodes')}
-                        active={activeTab === 'nodes'}
                         size="sm"
-                        className="!text-[10px] !px-2 !py-1"
+                        className={`!text-[10px] !px-3 !py-0 h-8 flex items-center justify-center gap-2 ${activeTab === 'nodes' ? activeClass : ''}`}
                     >
                         Nodes ({data.nodes.length})
                     </PixelButton>
                     <PixelButton
                         onClick={() => setActiveTab('edges')}
-                        active={activeTab === 'edges'}
                         size="sm"
-                        className="!text-[10px] !px-2 !py-1"
+                        className={`!text-[10px] !px-3 !py-0 h-8 flex items-center justify-center gap-2 ${activeTab === 'edges' ? activeClass : ''}`}
                     >
                         Edges ({data.edges.length})
                     </PixelButton>
@@ -117,7 +118,7 @@ export default function DataTable({ graph, fullGraph, viewAllData, onToggleViewA
                             onClick={onToggleViewAll}
                             active={viewAllData}
                             size="sm"
-                            className="!text-[10px] !px-2 !py-1 flex items-center gap-1"
+                            className="!text-[10px] !px-3 !py-0 h-8 flex items-center gap-2"
                             title={viewAllData ? "Show filtered data" : "View all data"}
                         >
                             {viewAllData ? <EyeOff size={12} /> : <Eye size={12} />}
@@ -129,7 +130,7 @@ export default function DataTable({ graph, fullGraph, viewAllData, onToggleViewA
                     <PixelButton
                         onClick={handleExport}
                         size="sm"
-                        className="!text-[10px] !px-2 !py-1 flex items-center gap-1"
+                        className="!text-[10px] !px-3 !py-0 h-8 flex items-center gap-2"
                         title="Download as CSV"
                     >
                         <Download size={12} />

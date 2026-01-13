@@ -105,6 +105,9 @@ export default function UploadModal({ isOpen, onClose, onUpload }) {
 
                             <div className="font-bold text-zinc-800 dark:text-zinc-200">Date</div>
                             <div className="col-span-2">YYYY-MM-DD</div>
+
+                            <div className="font-bold text-zinc-800 dark:text-zinc-200">Description</div>
+                            <div className="col-span-2">Contents of the source document</div>
                         </div>
                     </div>
                 </div>

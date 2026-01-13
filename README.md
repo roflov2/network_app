@@ -14,11 +14,12 @@ A powerful, high-performance network visualization and analysis tool designed to
 - **Double-Click Zoom**: Tight zoom on nodes for detailed inspection
 - **Focus History**: Previously clicked nodes marked with green borders
 
-### Advanced Analytics
-- **Community Detection**: Automatic node clustering using Louvain algorithm with visual separation
-- **Centrality Analysis**: Hub (degree centrality) and Bridge (betweenness centrality) detection with avatar icons
-- **Shortest Path Finder**: BFS algorithm to find all shortest paths between two nodes
-- **Timeline View**: Filter interactions by date range
+- **Advanced Analytics**:
+  - **AI Relationship Summary**: Instantly summarize complex document relationships using Google Gemini AI.
+  - **Community Detection**: Automatic node clustering using Louvain algorithm with visual separation.
+  - **Centrality Analysis**: Hub (degree centrality) and Bridge (betweenness centrality) detection with avatar icons.
+  - **Shortest Path Finder**: Calculate and visualize the shortest path between any two nodes.
+  - **Timeline View**: Filter interactions by date range.
 
 ### Data Management & Filtering
 - **Node Type Filtering**: Dynamic type recognition from CSV data with color-coded filtering
@@ -160,6 +161,10 @@ python -m venv venv
 
 # Install dependencies
 pip install -r requirements.txt
+
+# Setup Environment Variables
+# Create a .env file in the backend directory with your Gemini API key:
+# GEMINI_API_KEY=your_api_key_here
 
 # Start server
 uvicorn main:app --reload
