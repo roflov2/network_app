@@ -113,14 +113,21 @@ network_app/
 | `Target_Type` | Entity category | `Person`, `Organisation`, `Phone` |
 | `Date` | Temporal attribute | `2024-01-15` |
 
-### Supported Node Types
-- **Document** (Grey #6B7280)
-- **Person** (Sapphire #0F52BA)
-- **Phone** (Tangerine #F28500)
-- **Organisation** (Taupe #483C32)
-- **Email** (Ruby #E0115F)
-- **Website** (Purple #8B5CF6)
-- **Cryptocurrency/Wallet** (Tangerine #F28500)
+### Node Types
+
+Node types are **fully flexible** - you can use any value in the `Target_Type` column. The system includes predefined colors for common types:
+
+| Type | Color |
+|------|-------|
+| Document | Grey #6B7280 |
+| Person | Sapphire #0F52BA |
+| Phone | Tangerine #F28500 |
+| Organisation | Taupe #483C32 |
+| Email | Ruby #E0115F |
+| Website | Purple #8B5CF6 |
+| Cryptocurrency/Wallet | Tangerine #F28500 |
+
+**Custom types** (e.g., `Vehicle`, `Location`, `Event`) are automatically assigned a consistent color from a secondary palette using a deterministic hash.
 
 ## API Endpoints
 
