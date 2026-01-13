@@ -1,45 +1,136 @@
 # Network Explorer
 
-A powerful, high-performance network visualization and analysis tool designed to handle large-scale datasets. Built with **React** and **Sigma.js**, it enables interactive exploration of complex relationships with smooth WebGL rendering.
+A powerful, high-performance network visualization and analysis tool designed to handle large-scale datasets (2,000+ nodes). Built with **React** and **Sigma.js**, it enables interactive exploration of complex relationships between entities (people, organizations, phones, websites, cryptocurrency wallets) through shared document connections with smooth WebGL rendering.
 
-🚀 **[Live Demo](https://roflov2.github.io/network_app/)**
+**[Live Demo](https://roflov2.github.io/network_app/)**
 
-![Network Explorer Screenshot](https://via.placeholder.com/800x450?text=Network+Explorer+Visualization)
+## Features
 
-## ✨ Features
+### Core Visualization & Interactivity
+- **High-Performance Rendering**: WebGL-based rendering via Sigma.js handles thousands of nodes smoothly
+- **Focus Mode**: Click any node to isolate its 2-hop neighborhood (immediate neighbors + their neighbors)
+- **Hover Effects**: Node highlighting with visual feedback (red for hovered, orange for neighbors)
+- **Zoom & Pan**: Fluid navigation with smooth camera animations
+- **Double-Click Zoom**: Tight zoom on nodes for detailed inspection
+- **Focus History**: Previously clicked nodes marked with green borders
 
-- **High-Performance Visualization**: Renders thousands of nodes and edges smoothly using WebGL (Sigma.js).
-- **Interactive Exploration**:
-  - **Focus Mode**: Click any node to isolate its 2-hop neighborhood.
-  - **Zoom & Pan**: Fluid navigation of large graph structures.
-- **Advanced Analytics**:
-  - **Community Detection**: Automatically clusters nodes using the Louvain algorithm to reveal groups.
-  - **Path Finding**: Calculate and visualize the shortest path between any two nodes.
-  - **Timeline View**: Filter interactions by date/time.
-- **Flexible Filtering**:
-  - Filter by Node Type (Person, Organization, Phone, etc.).
-  - Isolate specific communities.
-  - Collapse "Document" nodes to see direct entity-to-entity connections.
-- **Data Import**: 
-  - Upload custom CSV files (requires local backend).
-  - Built-in demo data for quick testing.
+### Advanced Analytics
+- **Community Detection**: Automatic node clustering using Louvain algorithm with visual separation
+- **Centrality Analysis**: Hub (degree centrality) and Bridge (betweenness centrality) detection with avatar icons
+- **Shortest Path Finder**: BFS algorithm to find all shortest paths between two nodes
+- **Timeline View**: Filter interactions by date range
 
-## 🛠️ Tech Stack
+### Data Management & Filtering
+- **Node Type Filtering**: Dynamic type recognition from CSV data with color-coded filtering
+- **Document Collapse**: Transform bipartite graph to entity-only projection with weighted edges
+- **Advanced Search**: Fuzzy client-side search with instant results (<10ms)
+- **Data Tables**: Bi-directional selection between graph and tabular data
+- **CSV Export**: Download filtered/viewed data as CSV
+
+### Data Handling
+- **CSV Upload**: Drag-and-drop or file browser upload with backend processing
+- **Demo Data**: Pre-loaded test dataset for quick exploration
+
+## Tech Stack
 
 ### Frontend
 - **Framework**: React 18 (Vite)
-- **Visualization**: Sigma.js, Graphology
-- **Styling**: Tailwind CSS
+- **Graph Visualization**: Sigma.js 3.x (WebGL-based)
+- **Graph Data Structure**: Graphology 0.25.4
+- **Graph Algorithms**:
+  - `graphology-communities-louvain` (Community Detection)
+  - `graphology-layout-forceatlas2` (Layout with Web Worker)
+  - `graphology-metrics` (Betweenness, Degree Centrality)
+- **Search**: Fuse.js 7.x (fuzzy client-side search)
+- **Styling**: Tailwind CSS 3.4
 - **Icons**: Lucide React
+- **Charts**: Recharts 2.10 (timeline visualization)
 
 ### Backend
-- **Server**: FastAPI (Python)
+- **Framework**: FastAPI (Python)
+- **Server**: Uvicorn (ASGI)
 - **Data Processing**: Pandas
-- **Analysis**: NetworkX (Graph logic)
+- **Validation**: Pydantic
 
-## 🚀 Getting Started locally
+### Build Tools
+- Vite 5.0 (bundling)
+- PostCSS + Autoprefixer (CSS processing)
+- ESLint (code linting)
 
-To use the full features (including CSV upload), run both the frontend and backend locally.
+## Project Structure
+
+```
+network_app/
+├── backend/
+│   ├── main.py                 # FastAPI application with endpoints
+│   ├── test_main.py            # Backend unit tests
+│   └── requirements.txt        # Python dependencies
+│
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx             # Main React component
+│   │   ├── main.jsx            # Entry point
+│   │   ├── index.css           # Global styles
+│   │   ├── utils/
+│   │   │   └── graph-logic.js  # Core graph algorithms
+│   │   └── components/
+│   │       ├── Graph/
+│   │       │   ├── InteractiveGraph.jsx  # Sigma.js renderer
+│   │       │   └── GraphControls.jsx     # Graph interaction controls
+│   │       ├── UI/
+│   │       │   ├── UploadModal.jsx       # CSV upload interface
+│   │       │   ├── DataTable.jsx         # Tabular data display
+│   │       │   ├── PathTable.jsx         # Path-specific table
+│   │       │   ├── TypeFilters.jsx       # Node type checkboxes
+│   │       │   ├── CommunityPanel.jsx    # Community stats sidebar
+│   │       │   ├── SearchOverlay.jsx     # Fuzzy search UI
+│   │       │   ├── PathModal.jsx         # Path selection modal
+│   │       │   ├── FloatingControls.jsx  # Action buttons
+│   │       │   └── HelpModal.jsx         # User guide
+│   │       └── Analytics/
+│   │           └── Timeline.jsx          # Date-based filtering
+│   ├── public/
+│   │   └── demo-data.json      # Pre-loaded graph data
+│   ├── vite.config.js          # Vite config with API proxy
+│   ├── tailwind.config.js      # Tailwind theming
+│   └── package.json            # Dependencies
+│
+├── .github/workflows/
+│   └── deploy.yml              # GitHub Actions CI/CD pipeline
+├── FUNCTIONAL_SPEC.md          # Detailed specification
+└── README.md
+```
+
+## Data Model
+
+### CSV Input Schema (Required Columns)
+
+| Column | Description | Example |
+|--------|-------------|---------|
+| `Source` | Document ID (becomes "Document" node type) | `DOC001` |
+| `Target` | Entity identifier | `John Smith` |
+| `Edge_Type` | Relationship label | `MENTIONS`, `INVOLVES` |
+| `Target_Type` | Entity category | `Person`, `Organisation`, `Phone` |
+| `Date` | Temporal attribute | `2024-01-15` |
+
+### Supported Node Types
+- **Document** (Grey #6B7280)
+- **Person** (Sapphire #0F52BA)
+- **Phone** (Tangerine #F28500)
+- **Organisation** (Taupe #483C32)
+- **Email** (Ruby #E0115F)
+- **Website** (Purple #8B5CF6)
+- **Cryptocurrency/Wallet** (Tangerine #F28500)
+
+## API Endpoints
+
+| Method | Endpoint | Purpose | Response |
+|--------|----------|---------|----------|
+| GET | `/` | Health check | `{"status": "ok", "version": "2.0"}` |
+| POST | `/process-csv` | Convert CSV to graph JSON | `{"graph": {nodes[], edges[]}, "metadata": {...}}` |
+| POST | `/load-demo` | Load demo dataset | Same as above |
+
+## Getting Started
 
 ### Prerequisites
 - **Node.js** (v16+)
@@ -52,10 +143,10 @@ cd network_app
 ```
 
 ### 2. Start the Backend API
-The backend handles CSV processing and data conversion.
 ```bash
 cd backend
-# Create virtual environment (optional but recommended)
+
+# Create virtual environment (recommended)
 python -m venv venv
 # Windows: venv\Scripts\activate
 # Mac/Linux: source venv/bin/activate
@@ -70,7 +161,6 @@ API runs at: `http://localhost:8000`
 
 ### 3. Start the Frontend
 ```bash
-# Open a new terminal
 cd frontend
 
 # Install dependencies
@@ -81,13 +171,47 @@ npm run dev
 ```
 Frontend runs at: `http://localhost:5173`
 
-## 📦 Deployment
+The Vite dev server automatically proxies `/api/*` requests to the backend.
 
-This repository is configured for automated deployment to **GitHub Pages**.
+## Testing
 
-- **Frontend**: Automatically built and deployed via GitHub Actions on push to `main`.
-- **Backend Service**: The static GitHub Pages demo uses pre-loaded JSON data. The `Upload CSV` feature is disabled in the static demo as it requires the Python backend. For a full production deployment, host the `backend/` on a service like Render, Railway, or AWS.
+### Backend Tests
+```bash
+cd backend
+pytest test_main.py
+```
 
-## 📝 License
+**Test Coverage:**
+- API health check
+- Demo data loading
+- Valid CSV processing
+- Error handling for invalid input
+
+## Build & Deployment
+
+### Frontend Build
+```bash
+cd frontend
+npm run build
+```
+Output: `frontend/dist/` (static files)
+
+### GitHub Actions Workflow
+- **Trigger**: Push to `main` branch or manual workflow dispatch
+- **Process**: Checkout → Setup Node.js 18 → Install → Build → Deploy to GitHub Pages
+
+### Deployment Options
+- **Frontend**: Automated to GitHub Pages via GitHub Actions
+- **Backend**: For production CSV upload, deploy to Railway, Render, or AWS Lambda
+
+## Architecture
+
+This application uses a **client-first intelligence model**:
+- The lightweight Python backend handles data ingestion and transformation (CSV → JSON)
+- The React frontend performs all rendering, layout computation, search, and analytical operations in the browser
+- This architecture enables instant feedback and high performance even with large datasets
+- The backend is stateless; uploads are processed in-memory only (no data persistence)
+
+## License
 
 MIT License - feel free to use this for your own projects!
