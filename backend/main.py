@@ -191,7 +191,7 @@ async def summarize_edge(request: SummarizeRequest):
         4. Limit the response to 2-3 sentences max.
         """
         
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash-lite')
         response = model.generate_content(prompt)
         
         return {"summary": response.text}

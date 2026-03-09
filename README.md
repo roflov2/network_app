@@ -214,7 +214,7 @@ Output: `frontend/dist/` (static files)
 
 ### Deployment Options
 - **Frontend**: Automated to GitHub Pages via GitHub Actions
-- **Backend**: For production CSV upload, deploy to Railway, Render, or AWS Lambda
+- **Backend**: For production CSV upload, deploy to Railway, Render, or AWS Lambda. **Important:** You must add the `GEMINI_API_KEY` to your hosting provider's Environment Variables for the AI Summary feature to work.
 
 ## Architecture
 
