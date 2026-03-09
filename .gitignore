@@ -38,3 +38,6 @@ dist/
 
 # Logs
 *.log
+
+# Generated files
+guide.html
